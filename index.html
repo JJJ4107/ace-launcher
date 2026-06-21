@@ -57,8 +57,21 @@
   .nav a.active{background:linear-gradient(90deg,rgba(56,225,192,.16),rgba(91,140,255,.10));
     color:#fff;border-color:var(--line2)}
   .nav a.active .cnt{color:var(--accent)}
-  .side-foot{margin-top:24px;padding:12px 10px;border-top:1px solid var(--line);font-size:11px;color:var(--txt3)}
+  .side-foot{margin-top:18px;padding:12px 10px;border-top:1px solid var(--line);font-size:11px;color:var(--txt3)}
   .side-foot b{color:var(--txt2)}
+  .weblink{margin-top:22px;padding:14px 12px;border:1px solid var(--line2);border-radius:12px;
+    background:linear-gradient(180deg,var(--panel),var(--panel2));text-align:center}
+  .wl-h{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.5px;margin-bottom:8px}
+  .wl-url{display:block;font-size:11px;font-family:var(--mono);color:var(--txt2);word-break:break-all;
+    margin-bottom:9px;line-height:1.4}
+  .wl-url:hover{color:var(--accent)}
+  .wl-row{display:flex;gap:6px;margin-bottom:11px}
+  .wl-btn{flex:1;font-size:11px;font-weight:700;padding:7px 0;border-radius:8px;cursor:pointer;
+    background:var(--bg);border:1px solid var(--line2);color:var(--txt);text-align:center;transition:.13s}
+  .wl-btn:hover{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06130f;border-color:transparent}
+  .wl-qr{width:130px;height:130px;border-radius:9px;background:var(--panel);display:block;margin:0 auto;
+    border:1px solid var(--line)}
+  .wl-sub{font-size:10px;color:var(--txt3);margin-top:8px;line-height:1.4}
 
   /* main */
   .main{padding:26px 34px 60px;max-width:1500px}
@@ -224,6 +237,17 @@
     </div>
     <div class="navlbl">카테고리</div>
     <nav class="nav" id="nav"></nav>
+    <div class="weblink">
+      <div class="wl-h">📱 모바일 · 웹 링크</div>
+      <a class="wl-url" href="https://jjj4107.github.io/ace-launcher/" target="_blank" rel="noopener">jjj4107.github.io/ace-launcher</a>
+      <div class="wl-row">
+        <button class="wl-btn" id="wl-copy">링크 복사</button>
+        <a class="wl-btn" href="https://jjj4107.github.io/ace-launcher/" target="_blank" rel="noopener">열기 ↗</a>
+      </div>
+      <img class="wl-qr" alt="QR 코드" loading="lazy"
+           src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=0&bgcolor=151b27&color=e6ebf2&data=https%3A%2F%2Fjjj4107.github.io%2Face-launcher%2F">
+      <div class="wl-sub">폰 카메라로 QR 스캔 → 보기 전용 카탈로그</div>
+    </div>
     <div class="side-foot">
       <b>v2026.06</b> · 내부 전용<br>
       문의 · <b>설계자동화팀</b>
@@ -626,6 +650,14 @@ $("#q").addEventListener("input", e=>{ query=e.target.value; renderContent(); })
 
 /* ===================== INIT ===================== */
 renderStats(); renderNav(); renderContent();
+
+// 웹/모바일 링크 복사
+const _wc = document.getElementById("wl-copy");
+if(_wc) _wc.onclick = ()=>{
+  const u = "https://jjj4107.github.io/ace-launcher/";
+  if(navigator.clipboard) navigator.clipboard.writeText(u).then(()=>toast("📋 링크 복사됨")).catch(()=>toast(u));
+  else toast(u);
+};
 
 // 서버 없이(폰/OneDrive 보기) 열렸으면 상단에 '보기 전용' 표시 + 부제 변경
 if(!SERVED){
