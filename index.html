@@ -235,6 +235,11 @@
     background:var(--bg2);border:1px solid var(--line2);color:var(--txt);transition:.13s}
   .frun:hover{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06130f;border-color:transparent}
   .frun:disabled{opacity:.6;cursor:default}
+  /* view-only: 실행 시 나타나는 창 미리보기 스크린샷 */
+  .shotwrap{border-bottom:1px solid var(--line);background:var(--bg)}
+  .shotcap{padding:8px 12px;font-size:11px;color:var(--accent2);font-family:var(--mono)}
+  .shot{display:block;width:100%;height:auto;max-height:360px;object-fit:contain;
+    background:var(--bg);cursor:zoom-in}
   .viewtag{flex:0 0 auto;font-size:10px;font-weight:700;color:var(--accent2);background:rgba(91,140,255,.12);
     border:1px solid rgba(91,140,255,.3);padding:4px 10px;border-radius:8px}
   .viewonly-chip{font-size:11px;font-weight:700;color:var(--accent2);background:rgba(91,140,255,.12);
@@ -558,6 +563,7 @@ const UI = {
     mClose:"Close", viewtag:"view only", viewchip:"📱 View only",
     flLoad:"Loading…", flNoServer:"⚠ Opened without the server. Run <b>런처.bat</b> to see the list and actually run.",
     flNoPy:"No runnable .py files.", flMany:"This folder is a set of independent tools.<br>Check the script list / run from the PC launcher.",
+    shotCap:"▼ Window shown when run (preview — click to enlarge)",
     runIng:"Running…", runDone:"✓ Started", runRetry:"Retry", errComm:"✕ Server communication error",
     copied:"📋 Link copied",
   },
@@ -586,6 +592,7 @@ const UI = {
     mClose:"닫기", viewtag:"보기 전용", viewchip:"📱 보기 전용",
     flLoad:"불러오는 중…", flNoServer:"⚠ 서버 없이 열렸습니다. <b>런처.bat</b> 으로 실행하면 목록이 표시되고 실제로 동작합니다.",
     flNoPy:"실행할 .py 파일이 없습니다.", flMany:"여러 개의 독립 도구로 구성된 폴더입니다.<br>스크립트 목록·실행은 PC 런처에서 확인하세요.",
+    shotCap:"▼ 실행 시 나타나는 창 (미리보기 — 클릭하면 크게)",
     runIng:"실행 중…", runDone:"✓ 실행됨", runRetry:"재시도", errComm:"✕ 서버 통신 오류",
     copied:"📋 링크 복사됨",
   },
@@ -734,14 +741,25 @@ async function openModal(id){
 // 서버 없이(폰/OneDrive 등) 열렸을 때 — 실행 없이 대표 스크립트만 표시
 function renderViewOnly(p){
   const box = $("#filelist");
+  // 실행 시 나타나는 창 스크린샷: shots/<폴더경로(슬래시→__)>.png
+  const key = p.path.replace(/[\/\\]/g,"__");
+  const shot = `<div class="shotwrap" style="display:none">
+      <div class="shotcap">${T('shotCap')}</div>
+      <img class="shot" src="shots/${key}.png" alt="preview"
+        onclick="window.open(this.src,'_blank')"
+        onload="this.closest('.shotwrap').style.display='block'"
+        onerror="this.closest('.shotwrap').remove()">
+    </div>`;
   const list = (p.entry && p.entry.length) ? p.entry : null;
+  let rows;
   if(list){
     $("#m-cnt").textContent = `(${list.length})`;
-    box.innerHTML = list.map(n=>`<div class="frow"><span class="fname">${n}</span><span class="viewtag">${T('viewtag')}</span></div>`).join("");
+    rows = list.map(n=>`<div class="frow"><span class="fname">${n}</span><span class="viewtag">${T('viewtag')}</span></div>`).join("");
   } else {
     $("#m-cnt").textContent = "";
-    box.innerHTML = `<div class="floading">${T('flMany')}</div>`;
+    rows = `<div class="floading">${T('flMany')}</div>`;
   }
+  box.innerHTML = shot + rows;
 }
 
 async function loadScripts(p){
