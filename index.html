@@ -241,7 +241,8 @@
   .shot{display:block;width:100%;height:auto;max-height:360px;object-fit:contain;
     background:var(--bg);cursor:zoom-in}
   .viewtag{flex:0 0 auto;font-size:10px;font-weight:700;color:var(--accent2);background:rgba(91,140,255,.12);
-    border:1px solid rgba(91,140,255,.3);padding:4px 10px;border-radius:8px}
+    border:1px solid rgba(91,140,255,.3);padding:4px 10px;border-radius:8px;cursor:pointer;transition:.13s}
+  .viewtag:hover{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06130f;border-color:transparent}
   .viewonly-chip{font-size:11px;font-weight:700;color:var(--accent2);background:rgba(91,140,255,.12);
     border:1px solid rgba(91,140,255,.3);padding:6px 12px;border-radius:20px;white-space:nowrap}
   .m-f{padding:16px 24px 22px;display:flex;gap:10px}
@@ -564,6 +565,7 @@ const UI = {
     flLoad:"Loading…", flNoServer:"⚠ Opened without the server. Run <b>런처.bat</b> to see the list and actually run.",
     flNoPy:"No runnable .py files.", flMany:"This folder is a set of independent tools.<br>Check the script list / run from the PC launcher.",
     shotCap:"▼ Window shown when run (preview — click to enlarge)",
+    shotNone:"No preview image yet. Save it as {f}",
     runIng:"Running…", runDone:"✓ Started", runRetry:"Retry", errComm:"✕ Server communication error",
     copied:"📋 Link copied",
   },
@@ -593,6 +595,7 @@ const UI = {
     flLoad:"불러오는 중…", flNoServer:"⚠ 서버 없이 열렸습니다. <b>런처.bat</b> 으로 실행하면 목록이 표시되고 실제로 동작합니다.",
     flNoPy:"실행할 .py 파일이 없습니다.", flMany:"여러 개의 독립 도구로 구성된 폴더입니다.<br>스크립트 목록·실행은 PC 런처에서 확인하세요.",
     shotCap:"▼ 실행 시 나타나는 창 (미리보기 — 클릭하면 크게)",
+    shotNone:"아직 저장된 미리보기 이미지가 없습니다. {f} 로 저장하세요",
     runIng:"실행 중…", runDone:"✓ 실행됨", runRetry:"재시도", errComm:"✕ 서버 통신 오류",
     copied:"📋 링크 복사됨",
   },
@@ -754,12 +757,19 @@ function renderViewOnly(p){
   let rows;
   if(list){
     $("#m-cnt").textContent = `(${list.length})`;
-    rows = list.map(n=>`<div class="frow"><span class="fname">${n}</span><span class="viewtag">${T('viewtag')}</span></div>`).join("");
+    rows = list.map(n=>`<div class="frow"><span class="fname">${n}</span><button class="viewtag" type="button">${T('viewtag')}</button></div>`).join("");
   } else {
     $("#m-cnt").textContent = "";
     rows = `<div class="floading">${T('flMany')}</div>`;
   }
   box.innerHTML = shot + rows;
+  // 'view only' 클릭 → 미리보기 이미지 크게 열기 (없으면 안내)
+  const openShot = ()=>{
+    const img = box.querySelector(".shot");
+    if(img && img.complete && img.naturalWidth>0){ window.open(img.src,"_blank"); }
+    else{ toast(T('shotNone').replace("{f}", "shots/"+key+".png")); }
+  };
+  box.querySelectorAll(".viewtag").forEach(t=>{ t.onclick = openShot; });
 }
 
 async function loadScripts(p){
