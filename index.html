@@ -342,10 +342,11 @@
 ==================================================*/
 const CATS = [
   {id:"data",    name:"데이터시트/리스트",     ic:"📊"},
-  {id:"iso",     name:"아이소 도면 자동편집", ic:"📐"},
-  {id:"arr",     name:"배치도/평면도 편집",   ic:"🗺️"},
-  {id:"steel",   name:"철골 구조 변환",        ic:"🏗️"},
   {id:"conv",    name:"3D 모델·스펙 변환",     ic:"🔄"},
+  {id:"hrsg",    name:"HRSG 3D Modeling",      ic:"🌡️"},
+  {id:"arr",     name:"배치도/평면도 편집",   ic:"🗺️"},
+  {id:"iso",     name:"아이소 도면 자동편집", ic:"📐"},
+  {id:"steel",   name:"철골 구조 변환",        ic:"🏗️"},
   {id:"support", name:"파이프 서포트",         ic:"🔧"},
   {id:"util",    name:"계산·유틸리티",         ic:"🧰"},
 ];
@@ -399,7 +400,7 @@ const PROJECTS = [
    status:"run", count:12,
    desc:"빔·핸드레일·그레이팅·기둥 DXF를 E3D SCTN/PANE로 생성하는 일반 철골 구조 변환 파이프라인(00~03).",
    tags:["E3D","SCTN","PANE","Steel"]},
-  {cat:"steel", ic:"🌡️", title:"HRSG 철골 → E3D", path:"HRSG",
+  {cat:"hrsg", ic:"🌡️", title:"HRSG 3D Modeling", path:"HRSG",
    entry:["Ace_hrsg_runall.PY"],
    status:"run", count:21,
    desc:"HRSG 스택·케이싱·플랫폼·PPA 철골(100~403)을 E3D로 생성하고 노즐·장비까지 배치하는 전용 파이프라인.",
@@ -500,6 +501,7 @@ const CAT_EN = {
   iso:"Isometric Drawing Auto-Edit", arr:"Piping Arrangement Edit",
   steel:"Steel Structure Conversion", conv:"3D Model · Spec Conversion",
   support:"Pipe Support", data:"Datasheet / List", util:"Calculation · Utility",
+  hrsg:"HRSG 3D Modeling",
 };
 // 영문 오버레이 (path → 영문 제목/설명). 없으면 한글 원본 사용.
 const TR = {
@@ -512,7 +514,7 @@ const TR = {
   "PIPING_ARRANGEMENT_EDIT/SP3D":{title:"Arrangement Edit (SP3D)",desc:"SmartPlant 3D arrangement 100-series scripts: centerline, symbol, line-no, dimension, tag arrange."},
   "PIPING_ARRANGEMENT_EDIT/E3D":{title:"Arrangement Edit (E3D legacy)",desc:"Early E3D arrangement scripts (01–103) — line-no delete/stretch, dimension, tag layer change. Migrating to the new ACE_E3D."},
   "STEEL_STRUCTURE/2DTO3DFORE3D":{title:"Steel 2D→3D Conversion (E3D)",desc:"General steel-structure conversion pipeline (00–03) generating beams / handrails / grating / columns as E3D SCTN/PANE."},
-  "HRSG":{title:"HRSG Steel → E3D",desc:"Dedicated pipeline that builds HRSG stack / casing / platform / PPA steel (100–403) into E3D and places nozzles / equipment."},
+  "HRSG":{title:"HRSG 3D Modeling",desc:"Dedicated pipeline that builds HRSG stack / casing / platform / PPA steel (100–403) into E3D and places nozzles / equipment."},
   "STEEL_STRUCTURE/TEKLATOE3D":{title:"Tekla IFC → E3D",desc:"Parses Tekla IFC via ifcopenshell, extracts extrusion profiles / world placement, converts IfcBeam/Plate to E3D SCTN/PANE."},
   "E3D_STP_CONV":{title:"STEP → E3D Equipment",desc:"Heuristically recognizes NX STEP B-rep shapes and converts them to E3D primitives (CYLI / BOX / cylinder). Handles nozzles / flanges / bolts."},
   "E3D_SPEC_GEN":{title:"PDMS Piping Spec Generator",desc:"Analyzes a piping-spec PDF and auto-generates PDMS/E3D spec MACs. Assembled from catalog · valve family · recipes."},
