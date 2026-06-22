@@ -139,6 +139,14 @@
   .stat:nth-child(2)::after{background:radial-gradient(circle,rgba(91,140,255,.18),transparent 70%)}
   .stat:nth-child(3)::after{background:radial-gradient(circle,rgba(255,180,84,.18),transparent 70%)}
   .stat:nth-child(4)::after{background:radial-gradient(circle,rgba(61,220,151,.18),transparent 70%)}
+  /* 사이드바(좌측 카테고리) 맨 아래용 컴팩트 통계 */
+  .side-stats{grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 4px}
+  .side-stats .stat{padding:10px 11px}
+  .side-stats .stat::after{width:48px;height:48px;right:-12px;top:-12px}
+  .side-stats .stat .k{font-size:9px;letter-spacing:.3px}
+  .side-stats .stat .v{font-size:18px;margin-top:3px}
+  .side-stats .stat .v small{font-size:9px}
+  .side-stats .stat .d{display:none}
 
   /* section */
   .sec{margin-bottom:34px}
@@ -279,6 +287,8 @@
       <b>v2026.06</b> · 내부 전용<br>
       문의 · <b>설계자동화팀</b>
     </div>
+    <!-- stats (사이드바 맨 아래) -->
+    <div class="stats side-stats" id="stats"></div>
   </aside>
 
   <!-- ===== MAIN ===== -->
@@ -311,9 +321,6 @@
         <div><b style="font-size:12px" id="t-userrole">엔지니어</b><small id="t-userteam">설계자동화팀</small></div>
       </div>
     </div>
-
-    <!-- stats -->
-    <div class="stats" id="stats"></div>
 
     <!-- sections rendered here -->
     <div id="content"></div>
