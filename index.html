@@ -33,6 +33,12 @@
   }
   body.light .logo{color:#04241d}
   body.light ::selection{background:var(--accent);color:#fff}
+  /* 라이트 모드: 선택된 메뉴 글자가 흰색이라 안 보이는 문제 → 진한 색으로 */
+  body.light .nav a.active{
+    color:#142033;
+    background:linear-gradient(90deg,rgba(13,179,154,.18),rgba(59,111,224,.12));
+  }
+  body.light .nav a.active .cnt{color:var(--accent2)}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{
