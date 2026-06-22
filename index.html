@@ -96,6 +96,9 @@
   .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#ffb454,#ff6b6b);
     display:grid;place-items:center;font-weight:800;color:#1a0d00;font-size:12px}
   .userchip small{color:var(--txt3);display:block;font-size:10px}
+  .langsw{display:inline-flex;border:1px solid var(--line);border-radius:30px;overflow:hidden;background:var(--panel)}
+  .langsw button{background:transparent;color:var(--txt2);border:0;padding:9px 13px;font-size:12px;font-weight:700;cursor:pointer}
+  .langsw button.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06130f}
 
   /* stat row */
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0 26px}
@@ -235,20 +238,20 @@
       <div class="logo">A</div>
       <div><b>ACE Automation</b><span>Plant Engineering Tools</span></div>
     </div>
-    <div class="navlbl">카테고리</div>
+    <div class="navlbl" id="t-navlbl">카테고리</div>
     <nav class="nav" id="nav"></nav>
     <div class="weblink">
-      <div class="wl-h">📱 모바일 · 웹 링크</div>
+      <div class="wl-h" id="t-wlh">📱 모바일 · 웹 링크</div>
       <a class="wl-url" href="https://jjj4107.github.io/ace-launcher/" target="_blank" rel="noopener">jjj4107.github.io/ace-launcher</a>
       <div class="wl-row">
         <button class="wl-btn" id="wl-copy">링크 복사</button>
-        <a class="wl-btn" href="https://jjj4107.github.io/ace-launcher/" target="_blank" rel="noopener">열기 ↗</a>
+        <a class="wl-btn" id="wl-open" href="https://jjj4107.github.io/ace-launcher/" target="_blank" rel="noopener">열기 ↗</a>
       </div>
       <img class="wl-qr" alt="QR 코드" loading="lazy"
            src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&margin=0&bgcolor=151b27&color=e6ebf2&data=https%3A%2F%2Fjjj4107.github.io%2Face-launcher%2F">
-      <div class="wl-sub">폰 카메라로 QR 스캔 → 보기 전용 카탈로그</div>
+      <div class="wl-sub" id="t-wlsub">폰 카메라로 QR 스캔 → 보기 전용 카탈로그</div>
     </div>
-    <div class="side-foot">
+    <div class="side-foot" id="t-sidefoot">
       <b>v2026.06</b> · 내부 전용<br>
       문의 · <b>설계자동화팀</b>
     </div>
@@ -259,17 +262,25 @@
     <div class="topbar">
       <div class="hello">
         <h1>Plant Engineering Total Service System</h1>
-        <p>사내 배관·철골·도면 자동화 도구 모음 · 실행할 도구를 선택하세요</p>
+        <p id="t-hellosub">사내 배관·철골·도면 자동화 도구 모음 · 실행할 도구를 선택하세요</p>
       </div>
       <div class="spacer"></div>
       <div class="search">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9aa6bb" stroke-width="2">
           <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input id="q" type="text" placeholder="도구 검색…  (예: 아이소, BOM, PSV, 스펙)" autocomplete="off"/>
+        <input id="q" type="text" autocomplete="off"/>
       </div>
+      <div class="langsw" id="langsw">
+        <button data-l="en" class="on">EN</button>
+        <button data-l="ko">한글</button>
+      </div>
+      <a class="userchip" href="gui_preview.html" target="_blank" style="text-decoration:none;cursor:pointer" title="tkinter 룩 GUI 비교 미리보기">
+        <div class="avatar" style="background:linear-gradient(135deg,#5b8cff,#38e1c0)">🪟</div>
+        <div><b style="font-size:12px" id="t-guititle">GUI 미리보기</b><small id="t-guisub">tkinter 룩 비교</small></div>
+      </a>
       <div class="userchip">
         <div class="avatar">JJ</div>
-        <div><b style="font-size:12px">엔지니어</b><small>설계자동화팀</small></div>
+        <div><b style="font-size:12px" id="t-userrole">엔지니어</b><small id="t-userteam">설계자동화팀</small></div>
       </div>
     </div>
 
@@ -279,6 +290,7 @@
     <!-- sections rendered here -->
     <div id="content"></div>
     <div class="empty" id="empty">🔍 검색 결과가 없습니다.</div>
+    <!-- empty text set by lang -->
   </main>
 </div>
 
@@ -446,6 +458,108 @@ const STATUS = {
   lab:{cls:"b-lab", label:"실험실"},
 };
 
+/* ===================== i18n ===================== */
+let LANG = "en";                       // 디폴트 영문
+const STATUS_EN = { run:"Operational", dev:"In Dev", lab:"Experimental" };
+const CAT_EN = {
+  iso:"Isometric Drawing Auto-Edit", arr:"Piping Arrangement Edit",
+  steel:"Steel Structure Conversion", conv:"3D Model · Spec Conversion",
+  support:"Pipe Support", data:"Datasheet / List", util:"Calculation · Utility",
+};
+// 영문 오버레이 (path → 영문 제목/설명). 없으면 한글 원본 사용.
+const TR = {
+  "ISO_AUTO_EDIT/ISO_AUTO_EDIT_FOR_E3D":{title:"E3D Isometric Auto-Edit",desc:"Auto-cleans AVEVA E3D isometric DXF through a 25-step pipeline: weld / dimension / spool / support tags. Includes online (ON_) variants."},
+  "ISO_AUTO_EDIT/ISO_AUTO_EDIT_FOR_SP3D":{title:"SP3D Isometric Auto-Edit",desc:"Batch-corrects SmartPlant 3D isometric drawings: insulation / dimension / weld-no / elbow / elevation text, item-no rotation and support symbols."},
+  "ISO_AUTO_EDIT/ISO_AUTO_EDIT_FOR_E3DSA":{title:"E3D-SA Isometric Edit",desc:"Cleanup for E3D Stress (SA) isometrics — 11 steps following SA output rules (delete tee text / spec-no / flange info, etc.)."},
+  "ISO_AUTO_EDIT/ISO_AUTO_EDIT_FOR_PDS":{title:"PDS Isometric Auto-Edit",desc:"Dimension / item-no / weld-no / elbow editing of Intergraph PDS isometric DXF, plus ISO BOM Excel export."},
+  "ISO_AUTO_EDIT/ISO UPDATE NEW":{title:"ISO Updater (refactored)",desc:"Next-gen integrated version reorganizing the isometric-edit scripts into an src package (handler · *_edit modules)."},
+  "PIPING_ARRANGEMENT_EDIT/ACE_E3D":{title:"ACE Arrangement Edit (E3D)",desc:"E3D arrangement (plan) 200-series pipeline — centerline, symbols, line-no stretch, dimensioning, tag-no arrange, with option dialog."},
+  "PIPING_ARRANGEMENT_EDIT/SP3D":{title:"Arrangement Edit (SP3D)",desc:"SmartPlant 3D arrangement 100-series scripts: centerline, symbol, line-no, dimension, tag arrange."},
+  "PIPING_ARRANGEMENT_EDIT/E3D":{title:"Arrangement Edit (E3D legacy)",desc:"Early E3D arrangement scripts (01–103) — line-no delete/stretch, dimension, tag layer change. Migrating to the new ACE_E3D."},
+  "STEEL_STRUCTURE/2DTO3DFORE3D":{title:"Steel 2D→3D Conversion (E3D)",desc:"General steel-structure conversion pipeline (00–03) generating beams / handrails / grating / columns as E3D SCTN/PANE."},
+  "HRSG":{title:"HRSG Steel → E3D",desc:"Dedicated pipeline that builds HRSG stack / casing / platform / PPA steel (100–403) into E3D and places nozzles / equipment."},
+  "STEEL_STRUCTURE/TEKLATOE3D":{title:"Tekla IFC → E3D",desc:"Parses Tekla IFC via ifcopenshell, extracts extrusion profiles / world placement, converts IfcBeam/Plate to E3D SCTN/PANE."},
+  "E3D_STP_CONV":{title:"STEP → E3D Equipment",desc:"Heuristically recognizes NX STEP B-rep shapes and converts them to E3D primitives (CYLI / BOX / cylinder). Handles nozzles / flanges / bolts."},
+  "E3D_SPEC_GEN":{title:"PDMS Piping Spec Generator",desc:"Analyzes a piping-spec PDF and auto-generates PDMS/E3D spec MACs. Assembled from catalog · valve family · recipes."},
+  "CAESARII":{title:"PDMS → PCF (CAESAR II)",desc:"Extracts PDMS model to CAESAR II PCF input. Single flat MAC engine for TTY + Tkinter login GUI."},
+  "DATA_SHEET/LINE_LIST":{title:"Line List Generator",desc:"Builds a LINE LIST automatically by decoding KKS tags from P&ID (PDF/DXF). Includes From/To derivation and valve/symbol recognition."},
+  "DATA_SHEET/PMC":{title:"Pipe Thickness / PMC Sheet",desc:"ASME B31.1 pipe thickness + multi CI-sheet generation. Outputs PMC results to Excel via allowable-stress table, material mapping, PDF parsing."},
+  "DATA_SHEET/SAFETY_VALV_SIZING":{title:"Safety Valve (PSV) Sizing",desc:"Computes relief area with API 520 formulas (steam/gas/liquid), then selects API 526 orifice (D–T). Tkinter input GUI."},
+  "SUPPORT_DWG_EDIT/ACE_SUPP_E3D":{title:"ACE Support Plan Edit",desc:"Pipe-support plan 300-series — S_CENTER plate handling, dimension split, ATEXT mirror, EL/FL/GL elevation conversion and BOM."},
+  "SUPPORT_DWG_EDIT/SUPPORT_BOM":{title:"Support BOM / Drawing List",desc:"Auto-aggregates BHI / other BOM and drawing lists from support drawings. Includes online (ONLINE_) variants."},
+  "SUPPORT_DWG_EDIT/SUPPORT DATA AUTO INPUT":{title:"Support Data Input",desc:"Support base-data processing: standard data load, DWG→DXF conversion, spring dataset input."},
+  "SUPPORT_DWG_EDIT/SUPPORT":{title:"Support Weight Calc",desc:"Support total-weight (TOTALWT) calculation and DWG→DXF conversion helper."},
+  "ACEUTIL":{title:"Piping Calculators (ACEUTIL)",desc:"Small field calculators: fitting weight, pressure drop (steam/water/general), pipe thickness, insulation density."},
+  "PDF_EDIT":{title:"PDF Edit · Search · Model Check",desc:"Utilities: PDF OCR, text search (with preview viewer), P&ID model check, auto line/valve list generation."},
+  "OTHERS":{title:"Common Utilities (OTHERS)",desc:"Misc helper scripts: folder filename export, Python up/download, insulation density, etc."},
+  "CDQDWG":{title:"CDQ Drawing ISO Block Convert",desc:"DWG-edit script that batch-changes / cleans ISO blocks in CDQ drawings."},
+  "WeekWorkPDF":{title:"Weekly Report PDF",desc:"Auto-generates the weekly work report as a PDF."},
+};
+const UI = {
+  en:{
+    navlbl:"CATEGORIES", all:"All",
+    hellosub:"In-house piping / steel / drawing automation tools · pick a tool to run",
+    hellosubView:"Automation tool catalog · run from the PC launcher",
+    search:"Search tools…  (e.g. iso, BOM, PSV, spec)",
+    guititle:"GUI Preview", guisub:"tkinter look",
+    userrole:"Engineer", userteam:"Design Automation",
+    wlh:"📱 Mobile · Web", wlcopy:"Copy link", wlopen:"Open ↗",
+    wlsub:"Scan the QR with your phone → view-only catalog",
+    sidefoot:"<b>v2026.06</b> · Internal only<br>Contact · <b>Design Automation</b>",
+    empty:"🔍 No matching tools.",
+    statTools:"Registered Tools", statToolsD:"project-level tools",
+    statScripts:"Total Scripts", statScriptsD:"main .py files (excl. backups)",
+    statCats:"Categories", statCatsD:"by work area",
+    statRun:"Operational", statRunD:"in production",
+    unit:"", catUnit:"",
+    tools:"tools", scripts:"scripts", run:"Run ▸", open:"Open ▸",
+    mStatus:"Status", mScripts:"Scripts", mCategory:"Category", mRuntime:"Runtime",
+    mMainRun:"⚡ Main entry (runs all at once)", mMainScript:"⚡ Main script",
+    mScriptsRun:"▤ Scripts to run", mComponent:"▤ Component scripts",
+    mOneclick:"This folder runs the whole pipeline from the single main script below. (includes all {n} steps)",
+    mViewNote:"📱 View-only mode. Actual execution works only from the PC launcher (런처.bat).",
+    mClose:"Close", viewtag:"view only", viewchip:"📱 View only",
+    flLoad:"Loading…", flNoServer:"⚠ Opened without the server. Run <b>런처.bat</b> to see the list and actually run.",
+    flNoPy:"No runnable .py files.", flMany:"This folder is a set of independent tools.<br>Check the script list / run from the PC launcher.",
+    runIng:"Running…", runDone:"✓ Started", runRetry:"Retry", errComm:"✕ Server communication error",
+    copied:"📋 Link copied",
+  },
+  ko:{
+    navlbl:"카테고리", all:"전체",
+    hellosub:"사내 배관·철골·도면 자동화 도구 모음 · 실행할 도구를 선택하세요",
+    hellosubView:"사내 배관·철골·도면 자동화 도구 카탈로그 · 실행은 PC 런처에서",
+    search:"도구 검색…  (예: 아이소, BOM, PSV, 스펙)",
+    guititle:"GUI 미리보기", guisub:"tkinter 룩 비교",
+    userrole:"엔지니어", userteam:"설계자동화팀",
+    wlh:"📱 모바일 · 웹 링크", wlcopy:"링크 복사", wlopen:"열기 ↗",
+    wlsub:"폰 카메라로 QR 스캔 → 보기 전용 카탈로그",
+    sidefoot:"<b>v2026.06</b> · 내부 전용<br>문의 · <b>설계자동화팀</b>",
+    empty:"🔍 검색 결과가 없습니다.",
+    statTools:"등록 도구", statToolsD:"프로젝트 단위 자동화 도구",
+    statScripts:"전체 스크립트", statScriptsD:"주요 .py 파일 (백업 제외)",
+    statCats:"카테고리", statCatsD:"업무 영역별 그룹",
+    statRun:"운영중", statRunD:"현업 적용 완료",
+    unit:" 개", catUnit:" 분류",
+    tools:"tools", scripts:"scripts", run:"실행 ▸", open:"열기 ▸",
+    mStatus:"상태", mScripts:"스크립트", mCategory:"카테고리", mRuntime:"실행 환경",
+    mMainRun:"⚡ 대표 실행 (한 번에 전체 구동)", mMainScript:"⚡ 대표 스크립트",
+    mScriptsRun:"▤ 실행할 스크립트", mComponent:"▤ 구성 스크립트",
+    mOneclick:"이 폴더는 아래 대표 스크립트 하나로 전체 파이프라인이 실행됩니다. (전체 {n}개 단계 포함)",
+    mViewNote:"📱 보기 전용 모드입니다. 실제 실행은 PC 런처(런처.bat)에서만 동작합니다.",
+    mClose:"닫기", viewtag:"보기 전용", viewchip:"📱 보기 전용",
+    flLoad:"불러오는 중…", flNoServer:"⚠ 서버 없이 열렸습니다. <b>런처.bat</b> 으로 실행하면 목록이 표시되고 실제로 동작합니다.",
+    flNoPy:"실행할 .py 파일이 없습니다.", flMany:"여러 개의 독립 도구로 구성된 폴더입니다.<br>스크립트 목록·실행은 PC 런처에서 확인하세요.",
+    runIng:"실행 중…", runDone:"✓ 실행됨", runRetry:"재시도", errComm:"✕ 서버 통신 오류",
+    copied:"📋 링크 복사됨",
+  },
+};
+const T  = k => UI[LANG][k];
+const Tf = (k,v) => T(k).replace(/\{(\w+)\}/g, (_,n)=>v[n]);
+const catName = c => LANG==="en" ? (CAT_EN[c.id]||c.name) : c.name;
+const pTitle  = p => (LANG==="en" && TR[p.path]) ? TR[p.path].title : p.title;
+const pDesc   = p => (LANG==="en" && TR[p.path]) ? TR[p.path].desc  : p.desc;
+const statusLabel = st => LANG==="en" ? STATUS_EN[st] : STATUS[st].label;
+
 /* ===================== RENDER ===================== */
 const $ = s => document.querySelector(s);
 let active = "all";
@@ -462,17 +576,17 @@ function totals(){
 function renderStats(){
   const t = totals();
   $("#stats").innerHTML = `
-    <div class="stat"><div class="k">등록 도구</div><div class="v">${t.tools}<small> 개</small></div><div class="d">프로젝트 단위 자동화 도구</div></div>
-    <div class="stat"><div class="k">전체 스크립트</div><div class="v">${t.scripts}<small> 개</small></div><div class="d">주요 .py 파일 (백업 제외)</div></div>
-    <div class="stat"><div class="k">카테고리</div><div class="v">${t.cats}<small> 분류</small></div><div class="d">업무 영역별 그룹</div></div>
-    <div class="stat"><div class="k">운영중</div><div class="v" style="color:var(--ok)">${t.run}<small> 개</small></div><div class="d">현업 적용 완료</div></div>`;
+    <div class="stat"><div class="k">${T('statTools')}</div><div class="v">${t.tools}<small>${T('unit')}</small></div><div class="d">${T('statToolsD')}</div></div>
+    <div class="stat"><div class="k">${T('statScripts')}</div><div class="v">${t.scripts}<small>${T('unit')}</small></div><div class="d">${T('statScriptsD')}</div></div>
+    <div class="stat"><div class="k">${T('statCats')}</div><div class="v">${t.cats}<small>${T('catUnit')}</small></div><div class="d">${T('statCatsD')}</div></div>
+    <div class="stat"><div class="k">${T('statRun')}</div><div class="v" style="color:var(--ok)">${t.run}<small>${T('unit')}</small></div><div class="d">${T('statRunD')}</div></div>`;
 }
 
 function renderNav(){
   const counts = {};
   CATS.forEach(c=>counts[c.id]=PROJECTS.filter(p=>p.cat===c.id).length);
-  let html = `<a data-c="all" class="${active==='all'?'active':''}"><span class="ic">▦</span>전체<span class="cnt">${PROJECTS.length}</span></a>`;
-  html += CATS.map(c=>`<a data-c="${c.id}" class="${active===c.id?'active':''}"><span class="ic">${c.ic}</span>${c.name}<span class="cnt">${counts[c.id]}</span></a>`).join("");
+  let html = `<a data-c="all" class="${active==='all'?'active':''}"><span class="ic">▦</span>${T('all')}<span class="cnt">${PROJECTS.length}</span></a>`;
+  html += CATS.map(c=>`<a data-c="${c.id}" class="${active===c.id?'active':''}"><span class="ic">${c.ic}</span>${catName(c)}<span class="cnt">${counts[c.id]}</span></a>`).join("");
   $("#nav").innerHTML = html;
   $("#nav").querySelectorAll("a").forEach(a=>a.onclick=()=>{active=a.dataset.c;renderNav();renderContent();});
 }
@@ -483,14 +597,14 @@ function cardHTML(p){
     <div class="card-top">
       <div class="cico">${p.ic}</div>
       <div style="min-width:0">
-        <h3>${p.title}</h3>
+        <h3>${pTitle(p)}</h3>
       </div>
-      <span class="badge ${s.cls}">${s.label}</span>
+      <span class="badge ${s.cls}">${statusLabel(p.status)}</span>
     </div>
-    <div class="desc">${p.desc}</div>
+    <div class="desc">${pDesc(p)}</div>
     <div class="card-foot">
-      <span class="scount">▤ ${p.count} scripts</span>
-      <button class="run">${p.entry?'실행 ▸':'열기 ▸'}</button>
+      <span class="scount">▤ ${p.count} ${T('scripts')}</span>
+      <button class="run">${p.entry?T('run'):T('open')}</button>
     </div>
   </div>`;
 }
@@ -500,7 +614,7 @@ function renderContent(){
   const match = p => {
     if(active!=="all" && p.cat!==active) return false;
     if(!q) return true;
-    return (p.title+" "+p.desc+" "+p.path+" "+p.tags.join(" ")).toLowerCase().includes(q);
+    return (p.title+" "+p.desc+" "+pTitle(p)+" "+pDesc(p)+" "+p.path+" "+p.tags.join(" ")).toLowerCase().includes(q);
   };
   const cats = active==="all" ? CATS : CATS.filter(c=>c.id===active);
   let html="";
@@ -510,8 +624,8 @@ function renderContent(){
     if(!list.length) return;
     any=true;
     html += `<section class="sec">
-      <div class="sec-h"><span class="dot"></span><h2>${c.ic} ${c.name}</h2>
-        <span class="tag">${list.length} tools</span><span class="line"></span></div>
+      <div class="sec-h"><span class="dot"></span><h2>${c.ic} ${catName(c)}</h2>
+        <span class="tag">${list.length} ${T('tools')}</span><span class="line"></span></div>
       <div class="grid">${list.map(cardHTML).join("")}</div>
     </section>`;
   });
@@ -538,25 +652,25 @@ async function openModal(id){
   $("#modal").innerHTML = `
     <div class="m-h">
       <div class="cico">${p.ic}</div>
-      <div style="min-width:0"><h3>${p.title}</h3><div class="sub">${p.path}</div></div>
+      <div style="min-width:0"><h3>${pTitle(p)}</h3><div class="sub">${p.path}</div></div>
       <button class="m-x" id="mx">✕</button>
     </div>
     <div class="m-b">
-      <p>${p.desc}</p>
+      <p>${pDesc(p)}</p>
       <div class="m-meta">
-        <div><div class="k">상태</div><div class="v" style="color:var(--accent)">${s.label}</div></div>
-        <div><div class="k">스크립트</div><div class="v">${p.count} 개</div></div>
-        <div><div class="k">카테고리</div><div class="v" style="font-size:12px">${CATS.find(c=>c.id===p.cat).name}</div></div>
-        <div><div class="k">실행 환경</div><div class="v" style="font-size:12px">Python 3.x</div></div>
+        <div><div class="k">${T('mStatus')}</div><div class="v" style="color:var(--accent)">${statusLabel(p.status)}</div></div>
+        <div><div class="k">${T('mScripts')}</div><div class="v">${p.count}${T('unit')}</div></div>
+        <div><div class="k">${T('mCategory')}</div><div class="v" style="font-size:12px">${catName(CATS.find(c=>c.id===p.cat))}</div></div>
+        <div><div class="k">${T('mRuntime')}</div><div class="v" style="font-size:12px">Python 3.x</div></div>
       </div>
       <div class="m-row">${p.tags.map(t=>`<span class="chip">${t}</span>`).join("")}</div>
-      <div class="m-sub-h">${p.entry?(SERVED?'⚡ 대표 실행 (한 번에 전체 구동)':'⚡ 대표 스크립트'):(SERVED?'▤ 실행할 스크립트':'▤ 구성 스크립트')} <span id="m-cnt"></span></div>
-      ${(p.entry&&SERVED)?`<div class="oneclick">이 폴더는 아래 대표 스크립트 하나로 전체 파이프라인이 실행됩니다. (전체 ${p.count}개 단계 포함)</div>`:''}
-      ${!SERVED?`<div class="oneclick" style="background:rgba(91,140,255,.08);border-color:rgba(91,140,255,.25)">📱 보기 전용 모드입니다. 실제 실행은 PC 런처(런처.bat)에서만 동작합니다.</div>`:''}
+      <div class="m-sub-h">${p.entry?(SERVED?T('mMainRun'):T('mMainScript')):(SERVED?T('mScriptsRun'):T('mComponent'))} <span id="m-cnt"></span></div>
+      ${(p.entry&&SERVED)?`<div class="oneclick">${Tf('mOneclick',{n:p.count})}</div>`:''}
+      ${!SERVED?`<div class="oneclick" style="background:rgba(91,140,255,.08);border-color:rgba(91,140,255,.25)">${T('mViewNote')}</div>`:''}
       <div class="filelist" id="filelist"></div>
     </div>
     <div class="m-f">
-      <button class="btn" id="mc">닫기</button>
+      <button class="btn" id="mc">${T('mClose')}</button>
     </div>`;
   $("#ov").classList.add("show");
   $("#mx").onclick = $("#mc").onclick = closeModal;
@@ -571,10 +685,10 @@ function renderViewOnly(p){
   const list = (p.entry && p.entry.length) ? p.entry : null;
   if(list){
     $("#m-cnt").textContent = `(${list.length})`;
-    box.innerHTML = list.map(n=>`<div class="frow"><span class="fname">${n}</span><span class="viewtag">보기 전용</span></div>`).join("");
+    box.innerHTML = list.map(n=>`<div class="frow"><span class="fname">${n}</span><span class="viewtag">${T('viewtag')}</span></div>`).join("");
   } else {
     $("#m-cnt").textContent = "";
-    box.innerHTML = `<div class="floading">여러 개의 독립 도구로 구성된 폴더입니다.<br>스크립트 목록·실행은 PC 런처에서 확인하세요.</div>`;
+    box.innerHTML = `<div class="floading">${T('flMany')}</div>`;
   }
 }
 
@@ -592,7 +706,7 @@ async function loadScripts(p){
       if(filtered.length) list = filtered;   // 못 찾으면 전체 표시(안전장치)
     }
     $("#m-cnt").textContent = `(${list.length})`;
-    if(!list.length){ box.innerHTML = `<div class="floading">실행할 .py 파일이 없습니다.</div>`; return; }
+    if(!list.length){ box.innerHTML = `<div class="floading">${T('flNoPy')}</div>`; return; }
     // 하위폴더(sub)별 그룹
     const groups = {};
     list.forEach(f=>{ (groups[f.sub] ||= []).push(f); });
@@ -602,7 +716,7 @@ async function loadScripts(p){
       groups[sub].forEach(f=>{
         html += `<div class="frow">
           <span class="fname" title="${f.rel}">${f.name}</span>
-          <button class="frun" data-rel="${encodeURIComponent(f.rel)}">실행 ▸</button>
+          <button class="frun" data-rel="${encodeURIComponent(f.rel)}">${T('run')}</button>
         </div>`;
       });
     });
@@ -617,18 +731,18 @@ async function loadScripts(p){
 
 async function runScript(rel, btn){
   const old = btn.textContent;
-  btn.textContent = "실행 중…"; btn.disabled = true;
+  btn.textContent = T('runIng'); btn.disabled = true;
   try{
     const r = await fetch("/api/run", {
       method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({file: rel})
     });
     const d = await r.json();
-    toast(d.ok ? ("▸ " + d.message) : ("✕ " + (d.message||"실행 실패")));
-    btn.textContent = d.ok ? "✓ 실행됨" : "재시도";
+    toast(d.ok ? ("▸ " + d.message) : ("✕ " + (d.message||"failed")));
+    btn.textContent = d.ok ? T('runDone') : T('runRetry');
     setTimeout(()=>{ btn.textContent = old; btn.disabled = false; }, 1600);
   }catch(e){
-    toast("✕ 서버 통신 오류");
+    toast(T('errComm'));
     btn.textContent = old; btn.disabled = false;
   }
 }
@@ -648,27 +762,49 @@ function toast(msg){
 /* ===================== SEARCH ===================== */
 $("#q").addEventListener("input", e=>{ query=e.target.value; renderContent(); });
 
-/* ===================== INIT ===================== */
-renderStats(); renderNav(); renderContent();
-
 // 웹/모바일 링크 복사
 const _wc = document.getElementById("wl-copy");
 if(_wc) _wc.onclick = ()=>{
   const u = "https://jjj4107.github.io/ace-launcher/";
-  if(navigator.clipboard) navigator.clipboard.writeText(u).then(()=>toast("📋 링크 복사됨")).catch(()=>toast(u));
+  if(navigator.clipboard) navigator.clipboard.writeText(u).then(()=>toast(T('copied'))).catch(()=>toast(u));
   else toast(u);
 };
 
-// 서버 없이(폰/OneDrive 보기) 열렸으면 상단에 '보기 전용' 표시 + 부제 변경
+// 서버 없이(폰/OneDrive 보기) 열렸으면 상단에 '보기 전용' 표시
+let _voChip = null;
 if(!SERVED){
-  const chip = document.createElement("span");
-  chip.className = "viewonly-chip";
-  chip.textContent = "📱 보기 전용";
+  _voChip = document.createElement("span");
+  _voChip.className = "viewonly-chip";
   const uc = document.querySelector(".userchip");
-  uc.parentNode.insertBefore(chip, uc);
-  const sub = document.querySelector(".hello p");
-  if(sub) sub.textContent = "사내 배관·철골·도면 자동화 도구 카탈로그 · 실행은 PC 런처에서";
+  uc.parentNode.insertBefore(_voChip, uc);
 }
+
+/* ===================== 언어 적용 ===================== */
+function setText(id, txt){ const el=document.getElementById(id); if(el) el.textContent=txt; }
+function applyLang(){
+  document.documentElement.lang = LANG;
+  setText("t-navlbl", T('navlbl'));
+  setText("t-hellosub", SERVED ? T('hellosub') : T('hellosubView'));
+  $("#q").placeholder = T('search');
+  setText("t-guititle", T('guititle'));  setText("t-guisub", T('guisub'));
+  setText("t-userrole", T('userrole'));  setText("t-userteam", T('userteam'));
+  setText("t-wlh", T('wlh'));  setText("wl-copy", T('wlcopy'));
+  setText("wl-open", T('wlopen'));  setText("t-wlsub", T('wlsub'));
+  const sf=document.getElementById("t-sidefoot"); if(sf) sf.innerHTML = T('sidefoot');
+  setText("empty", T('empty'));
+  if(_voChip) _voChip.textContent = T('viewchip');
+  renderStats(); renderNav(); renderContent();
+}
+
+document.getElementById("langsw").addEventListener("click", e=>{
+  const b = e.target.closest("button"); if(!b) return;
+  LANG = b.dataset.l;
+  document.querySelectorAll("#langsw button").forEach(x=>x.classList.toggle("on", x===b));
+  applyLang();
+});
+
+/* ===================== INIT ===================== */
+applyLang();   // 디폴트 EN
 </script>
 </body>
 </html>

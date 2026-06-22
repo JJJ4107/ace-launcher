@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Piping GA Drawing Option — tkinter Web Recreation</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;font-family:"Segoe UI","Malgun Gothic","맑은 고딕",sans-serif;
+    background:#2b3a4a;display:flex;flex-direction:column;align-items:center;padding:24px 14px 60px;color:#fff}
+  .ph{text-align:center;margin-bottom:4px;max-width:880px}
+  .ph h1{margin:0;font-size:19px}
+  .ph p{margin:6px 0 0;color:#b9c6d6;font-size:13px}
+  .bar{display:flex;gap:8px;align-items:center;background:#1d2734;border:1px solid #34465a;
+    padding:8px 12px;border-radius:10px;margin:14px 0 22px}
+  .bar span{font-size:12px;color:#9fb0c3}
+  .seg{display:inline-flex;border:1px solid #3a4d63;border-radius:8px;overflow:hidden}
+  .seg button{background:#222e3c;color:#cdd9e6;border:0;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer}
+  .seg button.on{background:linear-gradient(180deg,#2f80ed,#1f6fd6);color:#fff}
+
+  /* 우측 상단 언어 전환 */
+  .langsw{position:fixed;top:16px;right:18px;display:inline-flex;border:1px solid #3a4d63;border-radius:20px;
+    overflow:hidden;background:#1d2734;box-shadow:0 4px 14px rgba(0,0,0,.35);z-index:10}
+  .langsw button{background:transparent;color:#9fb0c3;border:0;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer}
+  .langsw button.on{background:linear-gradient(180deg,#2f80ed,#1f6fd6);color:#fff}
+
+  .stage{display:flex;gap:30px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .col{display:flex;flex-direction:column;align-items:center;gap:9px}
+  .col>.lbl{font-size:12px;color:#cdd9e6;font-weight:600}
+  .col>.lbl.good{color:#7fe0b0}
+
+  /* =================== 공통 창 골격 =================== */
+  .win{width:472px;max-width:95vw;background:#f0f0f0;border:1px solid #6f6f6f;
+    box-shadow:0 16px 44px rgba(0,0,0,.5);font-size:12px;color:#111;user-select:none}
+  .os{height:30px;display:flex;align-items:center;gap:8px;padding:0 4px 0 9px;
+    background:linear-gradient(180deg,#fdfdfd,#eaeaea);border-bottom:1px solid #cdcdcd}
+  .os .ti{flex:1;font-size:12px;color:#1a1a1a}
+  .os .b{width:30px;height:22px;display:grid;place-items:center;color:#444;font-size:12px}
+  .os .b:hover{background:#e3e3e3}.os .b.x:hover{background:#e81123;color:#fff}
+  .oh{display:flex;align-items:center;height:26px;padding:0 8px;
+    background:linear-gradient(180deg,#ffc44d,#f6a91d);border-bottom:1px solid #d98e0a;
+    color:#3a2600;font-weight:700;font-size:12px}
+  .oh .x{margin-left:auto;color:#5a3c00;cursor:default}
+  .tabs{display:flex;gap:0;padding:6px 8px 0;background:#f0f0f0}
+  .tab{padding:5px 14px;border:1px solid #b9b9b9;border-bottom:0;background:#e3e3e3;color:#444;
+    border-radius:4px 4px 0 0;margin-right:2px;font-size:12px}
+  .tab.on{background:#f7f7f7;color:#0a0a0a;position:relative;top:1px;border-bottom:1px solid #f7f7f7}
+  .panel{border-top:1px solid #b9b9b9;background:#f0f0f0;padding:10px 12px 6px;margin-top:-1px}
+  fieldset.lf{border:1px solid #adadad;margin:0 0 11px;padding:9px 10px 9px;background:transparent}
+  fieldset.lf>legend{font-size:12px;color:#1a1a1a;padding:0 4px;margin-left:2px}
+  .toprow{display:flex;gap:10px}
+  .toprow fieldset.lf{flex:1;margin-bottom:11px}
+  .rrow{display:flex;align-items:center;gap:16px;padding:3px 2px}
+  label.r,label.c{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+  label.r input,label.c input{margin:0;width:13px;height:13px;accent-color:#0a64c8}
+  .cg{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;padding:2px 2px}
+  label.c.dis{color:#9a9a9a;cursor:default}
+  .fontrow{display:flex;align-items:center;gap:8px;padding:8px 2px 2px}
+  .fontrow .lab{width:130px;color:#1a1a1a}
+  select.cmb{flex:1;height:24px;border:1px solid #7a7a7a;background:#fff;font-size:12px;font-family:inherit;padding:2px 4px}
+  .foot{display:flex;justify-content:space-between;gap:10px;padding:10px 12px 12px;background:#f0f0f0}
+  .btn{flex:1;height:26px;font-size:12px;font-family:inherit;cursor:pointer;color:#101010;
+    background:linear-gradient(180deg,#fdfdfd,#e6e6e6);border:1px solid #8a8a8a;border-radius:3px}
+  .btn:hover{background:linear-gradient(180deg,#eaf4fd,#cfe8fb);border-color:#3c9ae8}
+
+  /* =================== 개선안 =================== */
+  .win.imp{border:1px solid #d9dee7;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 16px 44px rgba(20,40,80,.3)}
+  .imp .os{background:#fff;border-bottom:1px solid #eef1f5}
+  .imp .oh{background:linear-gradient(180deg,#ffce5e,#f7ad22);height:30px;font-size:12.5px}
+  .imp .tabs{padding:8px 12px 0;background:#fff}
+  .imp .tab{border:0;background:transparent;color:#7a8699;font-weight:600;border-radius:0;border-bottom:2px solid transparent}
+  .imp .tab.on{background:transparent;color:#1f6fd6;border-bottom:2px solid #1f6fd6;top:0}
+  .imp .panel{border-top:1px solid #eef1f5;background:#fff;padding:14px}
+  .imp fieldset.lf{border:1px solid #e8ecf3;border-radius:10px;padding:12px 12px 11px;background:#fbfcfe}
+  .imp fieldset.lf>legend{font-weight:700;color:#3a4a63}
+  .segctl{display:inline-flex;border:1px solid #cfd7e6;border-radius:8px;overflow:hidden}
+  .segctl button{border:0;background:#fff;color:#3a4a63;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;border-right:1px solid #e3e8f1;font-family:inherit}
+  .segctl button:last-child{border-right:0}
+  .segctl button.on{background:linear-gradient(180deg,#2f80ed,#1f6fd6);color:#fff}
+  .imp label.c{padding:5px 6px;border-radius:7px}
+  .imp label.c input{width:15px;height:15px}
+  .imp label.c.dis{color:#aeb6c4}
+  .lockwrap{display:inline-flex;align-items:center;gap:5px}
+  .lockwrap .lk{font-size:10px;color:#9aa3b2;border:1px solid #e0e4ec;background:#f3f5f9;border-radius:6px;padding:0 5px}
+  .imp .foot{background:#fff;padding:12px 14px 14px}
+  .imp .btn{height:34px;border:1px solid #d9dee7;border-radius:9px;background:#fff;font-weight:600}
+  .imp .btn.pri{background:linear-gradient(135deg,#2f80ed,#1f6fd6);color:#fff;border:0}
+  .imp .warn{display:flex;gap:7px;align-items:flex-start;font-size:11px;color:#c47d00;
+    background:#fff7e8;border:1px solid #ffe2b0;border-radius:8px;padding:7px 9px;margin:0 0 9px}
+
+  .note{max-width:980px;margin:24px auto 0;background:#1d2734;border:1px solid #34465a;border-radius:10px;
+    padding:14px 16px;color:#c4d2e2;font-size:12.5px;line-height:1.7}
+  .note b{color:#7fd4ff}
+</style>
+</head>
+<body>
+  <div class="langsw" id="langsw">
+    <button data-l="en" class="on">EN</button>
+    <button data-l="ko">한글</button>
+  </div>
+
+  <div class="ph">
+    <h1 id="t-title"></h1>
+    <p id="t-sub"></p>
+  </div>
+  <div class="bar">
+    <span id="t-show"></span>
+    <div class="seg" id="seg">
+      <button data-m="both" class="on" id="t-both"></button>
+      <button data-m="classic" id="t-classic"></button>
+      <button data-m="imp" id="t-imp"></button>
+    </div>
+  </div>
+  <div class="stage" id="stage"></div>
+  <div class="note" id="t-note"></div>
+
+<script>
+/* ===================== i18n ===================== */
+const I18N = {
+  en:{
+    htmlLang:"en",
+    title:"Piping GA Drawing Option — Web Recreation",
+    sub:"The original tkinter window recreated as web (HTML/CSS), servable directly on AWS Linux · file I/O kept as upload.",
+    show:"View",
+    both:"Side by side", classic:"Classic", imp:"Improved",
+    colClassic:"Classic tkinter recreation (Web / AWS)",
+    colImp:"Improved (segmented + lock restored)",
+    warn:"Auto-detected from the first DXF. If the layer is missing it shows 🔒 (auto-disabled); manual toggle is still possible.",
+    lock:"🔒 not found",
+    note:"<b>Left</b> = the original tkinter window recreated as closely as possible (orange header · ttk tabs · LabelFrame · single-row radios · Apply/Save/Load/Cancel). <b>Right</b> = same content, improved: mutually-exclusive options compressed into <b>segmented buttons</b>, auto-detected-false items restored as <b>grey lock + hint</b>. Both are drawn from one <b>option manifest</b> and connect directly to the AWS backend (multi-user). &nbsp;* Visual mockup — no real processing.",
+  },
+  ko:{
+    htmlLang:"ko",
+    title:"Piping GA Drawing Option — 웹 재현 비교",
+    sub:"원본 tkinter 창을 AWS 리눅스에서 그대로 서빙 가능한 웹(HTML/CSS)으로 재현 · 파일 입출력은 업로드 방식 유지.",
+    show:"표시",
+    both:"나란히 비교", classic:"클래식 재현", imp:"개선안",
+    colClassic:"클래식 tkinter 재현 (웹 / AWS)",
+    colImp:"개선안 (세그먼트 + 잠금 복원)",
+    warn:"첫 DXF를 분석해 자동 감지하는 값입니다. 도면에 해당 레이어가 없으면 🔒 표시(자동 비활성)되며, 필요 시 수동 toggle 가능합니다.",
+    lock:"🔒 미감지",
+    note:"<b>왼쪽</b>은 원본 tkinter를 최대한 똑같이 재현한 클래식 창(주황 헤더·ttk 탭·LabelFrame·라디오 한 줄·하단 Apply/Save/Load/Cancel), <b>오른쪽</b>은 같은 내용의 개선안입니다 — 상호배타 항목은 <b>세그먼트 버튼</b>으로 압축, 자동감지 false 항목은 <b>회색 잠금 + 안내</b>로 복원. 둘 다 동일한 <b>옵션 데이터(manifest)</b> 하나로 그려지며 그대로 AWS 백엔드(다중 사용자)에 연결됩니다. &nbsp;※ 외형 비교용 목업 — 실제 처리는 동작하지 않습니다.",
+  },
+};
+let LANG = "en";          // 디폴트 영문
+const T = k => I18N[LANG][k];
+
+/* ===================== 다이얼로그 데이터 ===================== */
+const DLG = {
+  title:"Piping GA Drawing Option : Dwg Scale 1/100",
+  tabs:["General","Annotation","Dimension"],
+  elev:{leg:"Elevation Expression", opts:["BOP","COP","TOP"], sel:"BOP"},
+  elfl:{leg:"EL or FL or GL", opts:["EL.","FL.","GL."], sel:"EL."},
+  nozzle:{leg:"Nozzle Table Create", items:[{t:"Nozzle Table"},{t:"Nozz No Annotation"}]},
+  tagging:{leg:"Tagging Option From E3D Draft Data",
+    left:[{t:"Line No Annotation",on:1},{t:"Valv No Annotation",on:1},{t:"Inst No Annotation",on:1},
+          {t:"Support Annotation",dis:1},{t:"Flow Mark",on:1}],
+    right:[{t:"Equip Annotation",on:1},{t:"Stru Annotation",on:1},{t:"WP EL.",dis:1},
+           {t:"Redu Annotation",dis:1},{t:"Tie Point Annotation",on:1}]},
+  font:"Arial",
+};
+
+function classicWin(d){
+  const radios=(g,n)=>g.opts.map(o=>`<label class="r"><input type="radio" name="${n}" ${o===g.sel?'checked':''}> ${o}</label>`).join("");
+  const checks=a=>a.map(c=>`<label class="c ${c.dis?'dis':''}"><input type="checkbox" ${c.on?'checked':''} ${c.dis?'disabled':''}> ${c.t}</label>`).join("");
+  const tabs=d.tabs.map((t,i)=>`<div class="tab ${i===0?'on':''}">${t}</div>`).join("");
+  return `<div class="win">
+    <div class="os"><span class="ti">${d.title}</span><span class="b">—</span><span class="b">▢</span><span class="b x">✕</span></div>
+    <div class="oh">${d.title}<span class="x">✕</span></div>
+    <div class="tabs">${tabs}</div>
+    <div class="panel">
+      <div class="toprow">
+        <fieldset class="lf"><legend>${d.elev.leg}</legend><div class="rrow">${radios(d.elev,'c_elev')}</div></fieldset>
+        <fieldset class="lf"><legend>${d.elfl.leg}</legend><div class="rrow">${radios(d.elfl,'c_elfl')}</div></fieldset>
+      </div>
+      <fieldset class="lf"><legend>${d.nozzle.leg}</legend><div class="cg">${checks(d.nozzle.items)}</div></fieldset>
+      <fieldset class="lf"><legend>${d.tagging.leg}</legend>
+        <div class="cg"><div>${checks(d.tagging.left)}</div><div>${checks(d.tagging.right)}</div></div></fieldset>
+      <div class="fontrow"><span class="lab">All Dwg Text Font :</span>
+        <select class="cmb"><option>${d.font}</option><option>Romans</option><option>맑은 고딕</option></select></div>
+    </div>
+    <div class="foot"><button class="btn">Apply</button><button class="btn">Save</button><button class="btn">Load</button><button class="btn">Cancel</button></div>
+  </div>`;
+}
+
+function impWin(d){
+  const seg=g=>`<div class="segctl">${g.opts.map(o=>`<button class="${o===g.sel?'on':''}">${o}</button>`).join("")}</div>`;
+  const check=c=> c.dis
+    ? `<label class="c dis"><span class="lockwrap"><input type="checkbox" disabled> ${c.t} <span class="lk">${T('lock')}</span></span></label>`
+    : `<label class="c"><input type="checkbox" ${c.on?'checked':''}> ${c.t}</label>`;
+  const tabs=d.tabs.map((t,i)=>`<div class="tab ${i===0?'on':''}">${t}</div>`).join("");
+  return `<div class="win imp">
+    <div class="os"><span class="ti">${d.title}</span><span class="b">—</span><span class="b">▢</span><span class="b x">✕</span></div>
+    <div class="oh">⚙ ${d.title}<span class="x" style="margin-left:auto">✕</span></div>
+    <div class="tabs">${tabs}</div>
+    <div class="panel">
+      <div class="toprow">
+        <fieldset class="lf"><legend>${d.elev.leg}</legend>${seg(d.elev)}</fieldset>
+        <fieldset class="lf"><legend>${d.elfl.leg}</legend>${seg(d.elfl)}</fieldset>
+      </div>
+      <fieldset class="lf"><legend>${d.nozzle.leg}</legend><div class="cg">${d.nozzle.items.map(check).join("")}</div></fieldset>
+      <fieldset class="lf"><legend>${d.tagging.leg}</legend>
+        <div class="warn">⚠ ${T('warn')}</div>
+        <div class="cg"><div>${d.tagging.left.map(check).join("")}</div><div>${d.tagging.right.map(check).join("")}</div></div></fieldset>
+      <div class="fontrow"><span class="lab">All Dwg Text Font</span>
+        <select class="cmb"><option>${d.font}</option><option>Romans</option><option>맑은 고딕</option></select></div>
+    </div>
+    <div class="foot"><button class="btn pri">Apply</button><button class="btn">Save</button><button class="btn">Load</button><button class="btn">Cancel</button></div>
+  </div>`;
+}
+
+let MODE = "both";
+function renderStage(){
+  const s=document.getElementById("stage");
+  const col=(lbl,html,good)=>`<div class="col"><div class="lbl ${good?'good':''}">${lbl}</div>${html}</div>`;
+  if(MODE==="classic") s.innerHTML=col(T('colClassic'), classicWin(DLG));
+  else if(MODE==="imp") s.innerHTML=col(T('colImp'), impWin(DLG), true);
+  else s.innerHTML=col(T('colClassic'), classicWin(DLG))+col(T('colImp'), impWin(DLG), true);
+}
+function applyLang(){
+  document.documentElement.lang = I18N[LANG].htmlLang;
+  document.getElementById("t-title").textContent = T('title');
+  document.getElementById("t-sub").textContent   = T('sub');
+  document.getElementById("t-show").textContent  = T('show');
+  document.getElementById("t-both").textContent  = T('both');
+  document.getElementById("t-classic").textContent = T('classic');
+  document.getElementById("t-imp").textContent   = T('imp');
+  document.getElementById("t-note").innerHTML    = "💡 " + T('note');
+  renderStage();
+}
+
+document.getElementById("seg").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b)return;
+  MODE=b.dataset.m;
+  document.querySelectorAll("#seg button").forEach(x=>x.classList.toggle("on",x===b));
+  renderStage();
+});
+document.getElementById("langsw").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b)return;
+  LANG=b.dataset.l;
+  document.querySelectorAll("#langsw button").forEach(x=>x.classList.toggle("on",x===b));
+  applyLang();
+});
+
+applyLang();   // 디폴트 EN
+</script>
+</body>
+</html>
