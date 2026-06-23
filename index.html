@@ -322,13 +322,8 @@
         <button data-l="en" class="on">EN</button>
         <button data-l="ko">한글</button>
       </div>
-      <a class="userchip" href="gui_preview.html" target="_blank" style="text-decoration:none;cursor:pointer" title="tkinter 룩 GUI 비교 미리보기">
-        <div class="avatar" style="background:linear-gradient(135deg,#5b8cff,#38e1c0)">🪟</div>
-        <div><b style="font-size:12px" id="t-guititle">GUI 미리보기</b><small id="t-guisub">tkinter 룩 비교</small></div>
-      </a>
       <div class="userchip">
         <div class="avatar">JJ</div>
-        <div><b style="font-size:12px" id="t-userrole">엔지니어</b><small id="t-userteam">설계자동화팀</small></div>
       </div>
     </div>
 
@@ -571,7 +566,7 @@ const UI = {
     mScriptsRun:"▤ Scripts to run", mComponent:"▤ Component scripts",
     mOneclick:"This folder runs the whole pipeline from the single main script below. (includes all {n} steps)",
     mViewNote:"📱 View-only mode. Actual execution works only from the PC launcher (런처.bat).",
-    mClose:"Close", viewtag:"view only", viewchip:"📱 View only",
+    mClose:"Close", viewtag:"view only", viewchip:"📱 View only", hiddenName:"main script",
     flLoad:"Loading…", flNoServer:"⚠ Opened without the server. Run <b>런처.bat</b> to see the list and actually run.",
     flNoPy:"No runnable .py files.", flMany:"This folder is a set of independent tools.<br>Check the script list / run from the PC launcher.",
     shotCap:"▼ Window shown when run (preview — click to enlarge)",
@@ -601,7 +596,7 @@ const UI = {
     mScriptsRun:"▤ 실행할 스크립트", mComponent:"▤ 구성 스크립트",
     mOneclick:"이 폴더는 아래 대표 스크립트 하나로 전체 파이프라인이 실행됩니다. (전체 {n}개 단계 포함)",
     mViewNote:"📱 보기 전용 모드입니다. 실제 실행은 PC 런처(런처.bat)에서만 동작합니다.",
-    mClose:"닫기", viewtag:"보기 전용", viewchip:"📱 보기 전용",
+    mClose:"닫기", viewtag:"보기 전용", viewchip:"📱 보기 전용", hiddenName:"메인 스크립트",
     flLoad:"불러오는 중…", flNoServer:"⚠ 서버 없이 열렸습니다. <b>런처.bat</b> 으로 실행하면 목록이 표시되고 실제로 동작합니다.",
     flNoPy:"실행할 .py 파일이 없습니다.", flMany:"여러 개의 독립 도구로 구성된 폴더입니다.<br>스크립트 목록·실행은 PC 런처에서 확인하세요.",
     shotCap:"▼ 실행 시 나타나는 창 (미리보기 — 클릭하면 크게)",
@@ -772,7 +767,8 @@ function renderViewOnly(p){
   let rows;
   if(list){
     $("#m-cnt").textContent = `(${list.length})`;
-    rows = list.map(n=>`<div class="frow"><span class="fname">${n}</span><button class="viewtag" type="button">${T('viewtag')}</button></div>`).join("");
+    // 보기 전용에서는 실제 .py 파일명을 노출하지 않고 일반 라벨로 표시 (공개 사이트 대비)
+    rows = list.map((n,i)=>`<div class="frow"><span class="fname">${T('hiddenName')}${list.length>1?` ${i+1}`:''}</span><button class="viewtag" type="button">${T('viewtag')}</button></div>`).join("");
   } else {
     $("#m-cnt").textContent = "";
     rows = `<div class="floading">${T('flMany')}</div>`;
@@ -865,14 +861,6 @@ if(_wc) _wc.onclick = ()=>{
   else toast(u);
 };
 
-// '보기 전용' 칩 — 실행 가능한 서버를 못 찾았을 때만 표시(applyLang에서 토글)
-let _voChip = document.createElement("span");
-_voChip.className = "viewonly-chip";
-{
-  const uc = document.querySelector(".userchip");
-  uc.parentNode.insertBefore(_voChip, uc);
-}
-
 /* ===================== 언어 적용 ===================== */
 function setText(id, txt){ const el=document.getElementById(id); if(el) el.textContent=txt; }
 function applyLang(){
@@ -880,13 +868,10 @@ function applyLang(){
   setText("t-navlbl", T('navlbl'));
   setText("t-hellosub", RUNNABLE() ? T('hellosub') : T('hellosubView'));
   $("#q").placeholder = T('search');
-  setText("t-guititle", T('guititle'));  setText("t-guisub", T('guisub'));
-  setText("t-userrole", T('userrole'));  setText("t-userteam", T('userteam'));
   setText("t-wlh", T('wlh'));  setText("wl-copy", T('wlcopy'));
   setText("wl-open", T('wlopen'));  setText("t-wlsub", T('wlsub'));
   const sf=document.getElementById("t-sidefoot"); if(sf) sf.innerHTML = T('sidefoot');
   setText("empty", T('empty'));
-  if(_voChip){ _voChip.textContent = T('viewchip'); _voChip.style.display = RUNNABLE() ? "none" : ""; }
   renderStats(); renderNav(); renderContent();
 }
 
