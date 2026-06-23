@@ -236,10 +236,14 @@
   .frun:hover{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06130f;border-color:transparent}
   .frun:disabled{opacity:.6;cursor:default}
   /* view-only: 실행 시 나타나는 창 미리보기 스크린샷 */
+  /* 다크 테마: 스크린샷도 반전(검정 배경). 라이트 테마: 원본(흰 배경) — 아래 body.light 에서 override */
   .shotwrap{border-bottom:1px solid var(--line);background:var(--bg)}
   .shotcap{padding:8px 12px;font-size:11px;color:var(--accent2);font-family:var(--mono)}
-  .shot{display:block;width:100%;height:auto;max-height:360px;object-fit:contain;
-    background:var(--bg);cursor:zoom-in}
+  /* 다크: 배경을 #fff 로 두면 invert 후 검정이 되어 레터박스가 반전된 스크린샷과 일치 */
+  .shot{display:block;width:100%;height:auto;max-height:360px;object-fit:contain;filter:invert(1) hue-rotate(180deg);
+    background:#fff;cursor:zoom-in}
+  body.light .shotwrap{background:#fff}
+  body.light .shot{filter:none;background:#fff}
   .viewtag{flex:0 0 auto;font-size:10px;font-weight:700;color:var(--accent2);background:rgba(91,140,255,.12);
     border:1px solid rgba(91,140,255,.3);padding:4px 10px;border-radius:8px;cursor:pointer;transition:.13s}
   .viewtag:hover{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06130f;border-color:transparent}
@@ -371,7 +375,7 @@ const PROJECTS = [
    tags:["SP3D","DXF","BOMFORM","SUPP"]},
   {cat:"iso", ic:"📐", title:"E3D-SA 아이소 편집", path:"ISO_AUTO_EDIT/ISO_AUTO_EDIT_FOR_E3DSA",
    entry:["SAE3D_ON_RUNTEST.PY"],
-   status:"run", count:25,
+   status:"run", count:27,
    desc:"E3D Stress(SA) 전용 아이소 정리 — 티(TEE) 텍스트·스펙번호·플랜지 정보 삭제 등 SA 출력 규칙에 맞춘 11단계.",
    tags:["E3D-SA","TEE","SPEC"]},
   {cat:"iso", ic:"📐", title:"PDS 아이소 자동편집", path:"ISO_AUTO_EDIT/ISO_AUTO_EDIT_FOR_PDS",
@@ -381,7 +385,7 @@ const PROJECTS = [
    tags:["PDS","DXF","Excel"]},
   {cat:"iso", ic:"🧪", title:"ISO Updater (리팩터링)", path:"ISO_AUTO_EDIT/ISO UPDATE NEW",
    entry:["iso_updater.py"],
-   status:"lab", count:18,
+   status:"lab", count:22,
    desc:"기존 아이소 편집 스크립트를 src 패키지(handler·*_edit 모듈) 구조로 재정리한 차세대 통합 버전.",
    tags:["refactor","package","handler"]},
 
@@ -392,47 +396,47 @@ const PROJECTS = [
    desc:"E3D 배치도(평면) 200번대 파이프라인 — 센터라인 생성·심볼·라인번호 stretch·치수 생성·태그번호 정렬, 옵션 다이얼로그 포함.",
    tags:["E3D","평면도","200번대","Tkinter"]},
   {cat:"arr", ic:"🗺️", title:"배치도 편집 (SP3D)", path:"PIPING_ARRANGEMENT_EDIT/SP3D",
-   status:"run", count:11,
+   status:"run", count:14,
    desc:"SmartPlant 3D 배치도용 센터라인·심볼·라인번호·치수·태그 정렬 100번대 스크립트 모음.",
    tags:["SP3D","평면도","100번대"]},
   {cat:"arr", ic:"🗺️", title:"배치도 편집 (E3D 구버전)", path:"PIPING_ARRANGEMENT_EDIT/E3D",
-   status:"dev", count:10,
+   status:"dev", count:11,
    desc:"초기 E3D 배치도 편집 스크립트(01~103) — 라인번호 삭제/stretch, 치수, 태그 레이어 변경. 신규 ACE_E3D로 이관 중.",
    tags:["E3D","legacy"]},
 
   // ---- STEEL ----
   {cat:"steel", ic:"🏗️", title:"철골 2D→3D 변환 (E3D)", path:"STEEL_STRUCTURE/2DTO3DFORE3D",
    entry:["ace_steel_runall.PY"],
-   status:"run", count:12,
+   status:"run", count:13,
    desc:"빔·핸드레일·그레이팅·기둥 DXF를 E3D SCTN/PANE로 생성하는 일반 철골 구조 변환 파이프라인(00~03).",
    tags:["E3D","SCTN","PANE","Steel"]},
   {cat:"hrsg", ic:"🌡️", title:"HRSG 3D Modeling", path:"HRSG",
    entry:["Ace_hrsg_runall.PY"],
-   status:"run", count:21,
+   status:"run", count:22,
    desc:"HRSG 스택·케이싱·플랫폼·PPA 철골(100~403)을 E3D로 생성하고 노즐·장비까지 배치하는 전용 파이프라인.",
    tags:["E3D","HRSG","Stack","Casing","Nozzle"]},
   {cat:"steel", ic:"🔩", title:"Tekla IFC → E3D", path:"STEEL_STRUCTURE/TEKLATOE3D",
    entry:["teklatoe3d.py"],
-   status:"run", count:1,
+   status:"run", count:2,
    desc:"Tekla IFC를 ifcopenshell로 파싱해 압출 프로파일·월드 배치를 추출, IfcBeam/Plate를 E3D SCTN·PANE로 변환.",
    tags:["IFC","ifcopenshell","Tekla","SCTN"]},
 
   // ---- CONVERT ----
   {cat:"conv", ic:"🔄", title:"STEP → E3D 장비 변환", path:"E3D_STP_CONV",
    entry:["stp_to_e3d_equi.py"],
-   status:"lab", count:3,
+   status:"lab", count:4,
    desc:"NX STEP B-rep 형상을 휴리스틱으로 인식해 E3D 프리미티브(CYLI·BOX·실린더 등)로 변환. 노즐·플랜지·볼트 처리.",
    tags:["STEP","B-rep","E3D","primitive"]},
-  {cat:"conv", ic:"⚙️", title:"PDMS 배관 스펙 생성기", path:"E3D_SPEC_GEN",
+  {cat:"conv", ic:"⚙️", title:"E3D 배관 스펙 생성기", path:"E3D_SPEC_GEN",
    entry:["spec_gen.py","pdms_launcher.py"],
-   status:"run", count:20,
-   desc:"배관 스펙 PDF를 분석해 PDMS/E3D용 스펙 MAC 4종을 자동 생성. 카탈로그·밸브 패밀리·레시피 기반 조립.",
-   tags:["PDMS","SPEC","MAC","PDF","catalog"]},
-  {cat:"conv", ic:"🧷", title:"PDMS → PCF (CAESAR II)", path:"CAESARII",
+   status:"run", count:21,
+   desc:"배관 스펙 PDF를 분석해 E3D용 스펙 MAC 4종을 자동 생성. 카탈로그·밸브 패밀리·레시피 기반 조립.",
+   tags:["E3D","SPEC","MAC","PDF","catalog"]},
+  {cat:"conv", ic:"🧷", title:"E3D → PCF (CAESAR II)", path:"CAESARII",
    entry:["PDMStoPCF.py"],
-   status:"run", count:4,
-   desc:"PDMS 모델을 CAESAR II 입력용 PCF로 추출. TTY용 단일 평면 MAC 엔진 + Tkinter 로그인 GUI.",
-   tags:["PDMS","PCF","CAESAR II","Stress"]},
+   status:"run", count:5,
+   desc:"E3D 모델을 CAESAR II 입력용 PCF로 추출. TTY용 단일 평면 MAC 엔진 + Tkinter 로그인 GUI.",
+   tags:["E3D","PCF","CAESAR II","Stress"]},
 
   // ---- DATA ----
   {cat:"data", ic:"📏", title:"Pipe Thickness Cal / PMC", path:"DATA_SHEET/PMC",
@@ -450,6 +454,11 @@ const PROJECTS = [
    status:"run", count:3,
    desc:"API 520 면적 공식(증기/가스/액체)으로 토출 면적 계산 후 API 526 오리피스(D~T) 선정. Tkinter 입력 GUI.",
    tags:["API 520","API 526","PSV","Tkinter"]},
+  {cat:"data", ic:"🧾", title:"ISO BOM / MTO 생성기", path:"MTO",
+   entry:["bom_runall.py"],
+   status:"run", count:6,
+   desc:"E3D·SP3D·PDS 아이소와 서포트(BHI) 도면에서 BOM/MTO를 집계해 엑셀로 출력. 통합 RUNALL + 공용 UI 테마.",
+   tags:["MTO","BOM","ISO","Excel"]},
   // ---- SUPPORT (파이프 서포트) ----
   {cat:"support", ic:"🔧", title:"ACE 서포트 평면 편집", path:"SUPPORT_DWG_EDIT/ACE_SUPP_E3D",
    entry:["ACE_SUPP_RUNALL.PY"],
@@ -461,7 +470,7 @@ const PROJECTS = [
    desc:"서포트 도면에서 BHI/기타 BOM과 도면 리스트를 자동 집계. 온라인(ONLINE_) 변형 포함.",
    tags:["Support","BOM","BHI","Excel"]},
   {cat:"support", ic:"🗃️", title:"서포트 데이터 입력", path:"SUPPORT_DWG_EDIT/SUPPORT DATA AUTO INPUT",
-   status:"dev", count:5,
+   status:"dev", count:7,
    desc:"서포트 표준 데이터 로드·DWG→DXF 변환·스프링 데이터셋 입력 등 서포트 기초 데이터 처리 도구.",
    tags:["Support","DWG","Spring","CSV"]},
   {cat:"support", ic:"⚖️", title:"서포트 중량 산출", path:"SUPPORT_DWG_EDIT/SUPPORT",
@@ -523,11 +532,12 @@ const TR = {
   "HRSG":{title:"HRSG 3D Modeling",desc:"Dedicated pipeline that builds HRSG stack / casing / platform / PPA steel (100–403) into E3D and places nozzles / equipment."},
   "STEEL_STRUCTURE/TEKLATOE3D":{title:"Tekla IFC → E3D",desc:"Parses Tekla IFC via ifcopenshell, extracts extrusion profiles / world placement, converts IfcBeam/Plate to E3D SCTN/PANE."},
   "E3D_STP_CONV":{title:"STEP → E3D Equipment",desc:"Heuristically recognizes NX STEP B-rep shapes and converts them to E3D primitives (CYLI / BOX / cylinder). Handles nozzles / flanges / bolts."},
-  "E3D_SPEC_GEN":{title:"PDMS Piping Spec Generator",desc:"Analyzes a piping-spec PDF and auto-generates PDMS/E3D spec MACs. Assembled from catalog · valve family · recipes."},
-  "CAESARII":{title:"PDMS → PCF (CAESAR II)",desc:"Extracts PDMS model to CAESAR II PCF input. Single flat MAC engine for TTY + Tkinter login GUI."},
+  "E3D_SPEC_GEN":{title:"E3D Piping Spec Generator",desc:"Analyzes a piping-spec PDF and auto-generates E3D spec MACs. Assembled from catalog · valve family · recipes."},
+  "CAESARII":{title:"E3D → PCF (CAESAR II)",desc:"Extracts E3D model to CAESAR II PCF input. Single flat MAC engine for TTY + Tkinter login GUI."},
   "DATA_SHEET/LINE_LIST":{title:"Line List Generator",desc:"Builds a LINE LIST automatically by decoding KKS tags from P&ID (PDF/DXF). Includes From/To derivation and valve/symbol recognition."},
   "DATA_SHEET/PMC":{title:"Pipe Thickness Cal / PMC",desc:"ASME B31.1 pipe thickness + multi CI-sheet generation. Outputs PMC results to Excel via allowable-stress table, material mapping, PDF parsing."},
   "DATA_SHEET/SAFETY_VALV_SIZING":{title:"Safety Valve (PSV) Sizing",desc:"Computes relief area with API 520 formulas (steam/gas/liquid), then selects API 526 orifice (D–T). Tkinter input GUI."},
+  "MTO":{title:"ISO BOM / MTO Generator",desc:"Aggregates BOM/MTO from E3D · SP3D · PDS isometrics and support (BHI) drawings, exporting to Excel. Unified RUNALL + shared UI theme."},
   "SUPPORT_DWG_EDIT/ACE_SUPP_E3D":{title:"ACE Support Plan Edit",desc:"Pipe-support plan 300-series — S_CENTER plate handling, dimension split, ATEXT mirror, EL/FL/GL elevation conversion and BOM."},
   "SUPPORT_DWG_EDIT/SUPPORT_BOM":{title:"Support BOM / Drawing List",desc:"Auto-aggregates BHI / other BOM and drawing lists from support drawings. Includes online (ONLINE_) variants."},
   "SUPPORT_DWG_EDIT/SUPPORT DATA AUTO INPUT":{title:"Support Data Input",desc:"Support base-data processing: standard data load, DWG→DXF conversion, spring dataset input."},
@@ -741,18 +751,23 @@ async function openModal(id){
   else renderViewOnly(p);
 }
 
-// 서버 없이(폰/OneDrive 등) 열렸을 때 — 실행 없이 대표 스크립트만 표시
-function renderViewOnly(p){
-  const box = $("#filelist");
-  // 실행 시 나타나는 창 스크린샷: shots/<폴더경로(슬래시→__)>.png
+// 실행 시 나타나는 창 스크린샷 HTML: shots/<폴더경로(슬래시→__)>.png
+// (이미지 없으면 onerror 로 스스로 제거 → 실행/보기 전용 모든 경우에 공용)
+function shotHtml(p){
   const key = p.path.replace(/[\/\\]/g,"__");
-  const shot = `<div class="shotwrap" style="display:none">
+  return `<div class="shotwrap" style="display:none">
       <div class="shotcap">${T('shotCap')}</div>
       <img class="shot" src="shots/${key}.png" alt="preview"
         onclick="window.open(this.src,'_blank')"
         onload="this.closest('.shotwrap').style.display='block'"
         onerror="this.closest('.shotwrap').remove()">
     </div>`;
+}
+
+// 서버 없이(폰/OneDrive 등) 열렸을 때 — 실행 없이 대표 스크립트만 표시
+function renderViewOnly(p){
+  const box = $("#filelist");
+  const shot = shotHtml(p);
   const list = (p.entry && p.entry.length) ? p.entry : null;
   let rows;
   if(list){
@@ -786,7 +801,7 @@ async function loadScripts(p){
       if(filtered.length) list = filtered;   // 못 찾으면 전체 표시(안전장치)
     }
     $("#m-cnt").textContent = `(${list.length})`;
-    if(!list.length){ box.innerHTML = `<div class="floading">${T('flNoPy')}</div>`; return; }
+    if(!list.length){ box.innerHTML = shotHtml(p) + `<div class="floading">${T('flNoPy')}</div>`; return; }
     // 하위폴더(sub)별 그룹
     const groups = {};
     list.forEach(f=>{ (groups[f.sub] ||= []).push(f); });
@@ -800,7 +815,7 @@ async function loadScripts(p){
         </div>`;
       });
     });
-    box.innerHTML = html;
+    box.innerHTML = shotHtml(p) + html;
     box.querySelectorAll(".frun").forEach(b=>{
       b.onclick = ()=>runScript(decodeURIComponent(b.dataset.rel), b);
     });
