@@ -464,7 +464,7 @@ const PROJECTS = [
   {cat:"data", ic:"🧾", title:"ISO BOM / MTO 생성기", path:"MTO",
    entry:["bom_runall.py"],
    status:"run", count:6,
-   desc:"E3D·SP3D·PDS 아이소와 서포트(BHI) 도면에서 BOM/MTO를 집계해 엑셀로 출력. 통합 RUNALL + 공용 UI 테마.",
+   desc:"E3D·SP3D·PDS 아이소와 서포트 도면에서 BOM/MTO를 집계해 엑셀로 출력. 통합 RUNALL + 공용 UI 테마.",
    tags:["MTO","BOM","ISO","Excel"]},
   // ---- SUPPORT (파이프 서포트) ----
   {cat:"support", ic:"🔧", title:"ACE 서포트 평면 편집", path:"SUPPORT_DWG_EDIT/ACE_SUPP_E3D",
@@ -474,8 +474,8 @@ const PROJECTS = [
    tags:["Support","S_CENTER","ATEXT","BOM"]},
   {cat:"support", ic:"📑", title:"서포트 도면 리스트", path:"SUPPORT_DWG_EDIT/SUPPORT_BOM",
    status:"run", count:12,
-   desc:"서포트 도면에서 BHI/기타 BOM과 도면 리스트를 자동 집계. 온라인(ONLINE_) 변형 포함.",
-   tags:["Support","BOM","BHI","Excel"]},
+   desc:"서포트 도면에서 BOM과 도면 리스트를 자동 집계. 온라인(ONLINE_) 변형 포함.",
+   tags:["Support","BOM","Excel"]},
   {cat:"support", ic:"🗃️", title:"서포트 데이터 입력", path:"SUPPORT_DWG_EDIT/SUPPORT DATA AUTO INPUT",
    status:"dev", count:7,
    desc:"서포트 표준 데이터 로드·DWG→DXF 변환·스프링 데이터셋 입력 등 서포트 기초 데이터 처리 도구.",
@@ -543,9 +543,9 @@ const TR = {
   "DATA_SHEET/LINE_LIST":{title:"Line List Generator",desc:"Builds a LINE LIST automatically by decoding KKS tags from P&ID (PDF/DXF). Includes From/To derivation and valve/symbol recognition."},
   "DATA_SHEET/PMC":{title:"Pipe Thickness Cal / PMC",desc:"ASME B31.1 pipe thickness + multi CI-sheet generation. Outputs PMC results to Excel via allowable-stress table, material mapping, PDF parsing."},
   "DATA_SHEET/SAFETY_VALV_SIZING":{title:"Safety Valve (PSV) Sizing",desc:"Computes relief area with API 520 formulas (steam/gas/liquid), then selects API 526 orifice (D–T). Tkinter input GUI."},
-  "MTO":{title:"ISO BOM / MTO Generator",desc:"Aggregates BOM/MTO from E3D · SP3D · PDS isometrics and support (BHI) drawings, exporting to Excel. Unified RUNALL + shared UI theme."},
+  "MTO":{title:"ISO BOM / MTO Generator",desc:"Aggregates BOM/MTO from E3D · SP3D · PDS isometrics and support drawings, exporting to Excel. Unified RUNALL + shared UI theme."},
   "SUPPORT_DWG_EDIT/ACE_SUPP_E3D":{title:"ACE Support Plan Edit",desc:"Pipe-support plan 300-series — S_CENTER plate handling, dimension split, ATEXT mirror, EL/FL/GL elevation conversion and BOM."},
-  "SUPPORT_DWG_EDIT/SUPPORT_BOM":{title:"Support Drawing List",desc:"Auto-aggregates BHI / other drawing lists from support drawings. Includes online (ONLINE_) variants."},
+  "SUPPORT_DWG_EDIT/SUPPORT_BOM":{title:"Support Drawing List",desc:"Auto-aggregates drawing lists from support drawings. Includes online (ONLINE_) variants."},
   "SUPPORT_DWG_EDIT/SUPPORT DATA AUTO INPUT":{title:"Support Data Input",desc:"Support base-data processing: standard data load, DWG→DXF conversion, spring dataset input."},
   "SUPPORT_DWG_EDIT/SUPPORT":{title:"Support Weight Calc",desc:"Support total-weight (TOTALWT) calculation and DWG→DXF conversion helper."},
   "ACEUTIL":{title:"Piping Calculators (ACEUTIL)",desc:"Small field calculators: fitting weight, pressure drop (steam/water/general), pipe thickness, insulation density."},
@@ -659,7 +659,7 @@ function renderNav(){
 // 카드별 산출물(출력 예시) 이미지 manifest — build_web.py 가 outputs/<key>/*.png 스캔해 자동 갱신.
 // key = path 의 / → __ (shots 와 동일). 값 = 파일명 배열. fetch 없이 임베드 → 모든 환경에서 동작.
 /* OUTPUTS_START */
-const OUTPUTS = {"DATA_SHEET__PMC":["01_DATA_SHEET__PMC/01_PipeThick_Calculation.png"]};
+const OUTPUTS = {"DATA_SHEET__PMC":["01_DATA_SHEET__PMC/01_CI-SHEET.png","01_DATA_SHEET__PMC/02_NAME CODE(PMC).png","01_DATA_SHEET__PMC/03_Auto Pipe Thk Cal Index.png","01_DATA_SHEET__PMC/04_Pipe Wall Thick Calculation Sheet.png"]};
 /* OUTPUTS_END */
 const keyOf = p => p.path.replace(/[\/\\]/g,"__");
 const outFiles = p => OUTPUTS[keyOf(p)] || [];
@@ -882,9 +882,10 @@ function openOutputs(key){
   const title = p ? pTitle(p) : key;
   const body = files.length
     ? files.map(rel=>{
-        // rel = "NN_<key>/file.png" (outputs 기준 상대경로). 각 구간 인코딩, 캡션=파일명.
+        // rel = "NN_<key>/NN_name.png" (outputs 기준 상대경로). 각 구간 인코딩.
         const src = "outputs/" + rel.split("/").map(encodeURIComponent).join("/");
-        const cap = rel.split("/").pop();
+        // 캡션 = 파일명에서 정렬용 NN_ 접두어와 확장자 제거한 깔끔한 이름
+        const cap = rel.split("/").pop().replace(/^\d+_/, "").replace(/\.[^.]+$/, "");
         return `<div class="lb-cap">${cap}</div>
           <img class="lb-img" src="${src}" alt="${cap}" loading="lazy"
             onclick="window.open(this.src,'_blank')">`;
