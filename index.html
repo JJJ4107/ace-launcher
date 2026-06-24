@@ -255,6 +255,8 @@
   .lb-img{display:block;width:100%;height:auto;object-fit:contain;border-radius:10px;
     filter:invert(1) hue-rotate(180deg);background:#fff;cursor:zoom-in;border:1px solid var(--line)}
   body.light .lb-img{filter:none}
+  /* 테마쌍(네이티브) 이미지: CSS 반전 안 함, 테마별 src 교체 */
+  .lb-img.native{filter:none !important;background:transparent}
   .lb-cap{font-size:11px;color:var(--txt3);font-family:var(--mono);margin:2px 0 -4px}
   .lb-empty{font-size:12.5px;color:var(--txt3);text-align:center;padding:30px 10px}
   .viewtag{flex:0 0 auto;font-size:10px;font-weight:700;color:var(--accent2);background:rgba(91,140,255,.12);
@@ -659,7 +661,7 @@ function renderNav(){
 // 카드별 산출물(출력 예시) 이미지 manifest — build_web.py 가 outputs/<key>/*.png 스캔해 자동 갱신.
 // key = path 의 / → __ (shots 와 동일). 값 = 파일명 배열. fetch 없이 임베드 → 모든 환경에서 동작.
 /* OUTPUTS_START */
-const OUTPUTS = {"DATA_SHEET__PMC":["01_DATA_SHEET__PMC/01_CI-SHEET.png","01_DATA_SHEET__PMC/02_NAME CODE(PMC).png","01_DATA_SHEET__PMC/03_Auto Pipe Thk Cal Index.png","01_DATA_SHEET__PMC/04_Pipe Wall Thick Calculation Sheet.png","01_DATA_SHEET__PMC/05_PMC Auto Generator Sample 1.png","01_DATA_SHEET__PMC/06_PMC Auto Generator Sample 2.png","01_DATA_SHEET__PMC/07_PMC Auto Generator Sample 3.png"],"DATA_SHEET__LINE_LIST":["02_DATA_SHEET__LINE_LIST/01_Line list Auto Gen Output sample.png","02_DATA_SHEET__LINE_LIST/02_Valve list Auto Gen Output sample.png"],"MTO":["04_MTO/01_ISO BOM AUTO GEN FROM ISO DWG - MTO Data.png","04_MTO/02_ISO BOM AUTO GEN FROM ISO DWG - TOTAL BOM.png","04_MTO/03_ISO BOM AUTO GEN FROM ISO DWG - FAB MAT.png","04_MTO/04_ISO BOM AUTO GEN FROM ISO DWG - PIPE.png","04_MTO/05_ISO BOM AUTO GEN FROM ISO DWG - FITTING.png","04_MTO/06_ISO BOM AUTO GEN FROM ISO DWG - INST.png","04_MTO/07_WELDING BOM AUTO GEN FROM ISO DWG - ALL_WELD.png","04_MTO/08_WELDING BOM AUTO GEN FROM ISO DWG - FW.png","04_MTO/09_WELDING BOM AUTO GEN FROM ISO DWG - SW.png","04_MTO/10_WELDING BOM AUTO GEN FROM ISO DWG - SW TOTAL.png","04_MTO/11_WELDING BOM AUTO GEN FROM ISO DWG - FW TOTAL.png","04_MTO/12_WELDING BOM AUTO GEN FROM ISO DWG - MAT_CS.png"],"E3D_SPEC_GEN":["06_E3D_SPEC_GEN/01_PMS Spec Sample.png","06_E3D_SPEC_GEN/02_E3D Spec Auto Gen from PMC sample.png"],"PIPING_ARRANGEMENT_EDIT__SP3D":["10_PIPING_ARRANGEMENT_EDIT__SP3D/01_SP3D Input File for Piping GA.png","10_PIPING_ARRANGEMENT_EDIT__SP3D/02_SP3D Auto Output file for Piping GA.png"]};
+const OUTPUTS = {"DATA_SHEET__PMC":["01_DATA_SHEET__PMC/01_CI-SHEET.png","01_DATA_SHEET__PMC/02_NAME CODE(PMC).png","01_DATA_SHEET__PMC/03_Auto Pipe Thk Cal Index.png","01_DATA_SHEET__PMC/04_Pipe Wall Thick Calculation Sheet.png","01_DATA_SHEET__PMC/05_PMC Auto Generator Sample 1.png","01_DATA_SHEET__PMC/06_PMC Auto Generator Sample 2.png","01_DATA_SHEET__PMC/07_PMC Auto Generator Sample 3.png"],"DATA_SHEET__LINE_LIST":["02_DATA_SHEET__LINE_LIST/01_Line list Auto Gen Output sample.png","02_DATA_SHEET__LINE_LIST/02_Valve list Auto Gen Output sample.png"],"MTO":["04_MTO/01_ISO BOM AUTO GEN FROM ISO DWG - MTO Data.png","04_MTO/02_ISO BOM AUTO GEN FROM ISO DWG - TOTAL BOM.png","04_MTO/03_ISO BOM AUTO GEN FROM ISO DWG - FAB MAT.png","04_MTO/04_ISO BOM AUTO GEN FROM ISO DWG - PIPE.png","04_MTO/05_ISO BOM AUTO GEN FROM ISO DWG - FITTING.png","04_MTO/06_ISO BOM AUTO GEN FROM ISO DWG - INST.png","04_MTO/07_WELDING BOM AUTO GEN FROM ISO DWG - ALL_WELD.png","04_MTO/08_WELDING BOM AUTO GEN FROM ISO DWG - FW.png","04_MTO/09_WELDING BOM AUTO GEN FROM ISO DWG - SW.png","04_MTO/10_WELDING BOM AUTO GEN FROM ISO DWG - SW TOTAL.png","04_MTO/11_WELDING BOM AUTO GEN FROM ISO DWG - FW TOTAL.png","04_MTO/12_WELDING BOM AUTO GEN FROM ISO DWG - MAT_CS.png"],"E3D_SPEC_GEN":["06_E3D_SPEC_GEN/01_PMS Spec Sample.png","06_E3D_SPEC_GEN/02_E3D Spec Auto Gen from PMC sample.png"],"PIPING_ARRANGEMENT_EDIT__ACE_E3D":[{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/input1.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/input2.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/output1.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/output2.png"}],"PIPING_ARRANGEMENT_EDIT__SP3D":[{"n":"10_PIPING_ARRANGEMENT_EDIT__SP3D/01_SP3D Input File for Piping GA.png"},{"n":"10_PIPING_ARRANGEMENT_EDIT__SP3D/02_SP3D Auto Output file for Piping GA.png"}]};
 /* OUTPUTS_END */
 const keyOf = p => p.path.replace(/[\/\\]/g,"__");
 const outFiles = p => OUTPUTS[keyOf(p)] || [];
@@ -880,14 +882,28 @@ function openOutputs(key){
   const p = PROJECTS.find(x=>keyOf(x)===key);
   const files = OUTPUTS[key] || [];
   const title = p ? pTitle(p) : key;
+  const enc = r => "outputs/" + r.split("/").map(encodeURIComponent).join("/");
+  const isDark = () => !document.body.classList.contains("light");
   const body = files.length
-    ? files.map(rel=>{
-        // rel = "NN_<key>/NN_name.png" (outputs 기준 상대경로). 각 구간 인코딩.
-        const src = "outputs/" + rel.split("/").map(encodeURIComponent).join("/");
-        // 캡션 = 파일명에서 정렬용 NN_ 접두어와 확장자 제거한 깔끔한 이름
-        const cap = rel.split("/").pop().replace(/^\d+_/, "").replace(/\.[^.]+$/, "");
+    ? files.map(item=>{
+        // item: 문자열="NN/file"(밝은 문서, CSS 반전) | {n}=네이티브 단일(반전X)
+        //       | {l,d}=테마쌍(다크=d, 라이트=l, 반전X)
+        const obj = (typeof item === "object");
+        const lref = obj ? (item.n || item.l) : item;
+        const cap = lref.split("/").pop().replace(/^\d+_/, "").replace(/\.[^.]+$/, "");
+        if(obj && item.n){               // 네이티브 단일(다크 CAD 등) — 양테마 동일
+          return `<div class="lb-cap">${cap}</div>
+            <img class="lb-img native" src="${enc(item.n)}" alt="${cap}" loading="lazy"
+              onclick="window.open(this.src,'_blank')">`;
+        }
+        if(obj){                         // 테마쌍
+          const ls = enc(item.l), ds = enc(item.d);
+          return `<div class="lb-cap">${cap}</div>
+            <img class="lb-img native" src="${isDark()?ds:ls}" data-l="${ls}" data-d="${ds}" alt="${cap}" loading="lazy"
+              onclick="window.open(this.src,'_blank')">`;
+        }
         return `<div class="lb-cap">${cap}</div>
-          <img class="lb-img" src="${src}" alt="${cap}" loading="lazy"
+          <img class="lb-img" src="${enc(item)}" alt="${cap}" loading="lazy"
             onclick="window.open(this.src,'_blank')">`;
       }).join("")
     : `<div class="lb-empty">${T('outEmpty')}</div>`;
@@ -948,6 +964,11 @@ document.getElementById("langsw").addEventListener("click", e=>{
 function applyTheme(t){
   document.body.classList.toggle("light", t==="light");
   document.querySelectorAll("#themesw button").forEach(x=>x.classList.toggle("on", x.dataset.t===t));
+  // 열려있는 라이트박스의 테마쌍 이미지 src 교체(다크=__dark)
+  const dark = t!=="light";
+  document.querySelectorAll(".lb-img.native").forEach(img=>{
+    const s = dark ? img.dataset.d : img.dataset.l; if(s) img.src = s;
+  });
   try{ localStorage.setItem("ace-theme", t); }catch(e){}
 }
 document.getElementById("themesw").addEventListener("click", e=>{
