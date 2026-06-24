@@ -659,7 +659,7 @@ function renderNav(){
 // 카드별 산출물(출력 예시) 이미지 manifest — build_web.py 가 outputs/<key>/*.png 스캔해 자동 갱신.
 // key = path 의 / → __ (shots 와 동일). 값 = 파일명 배열. fetch 없이 임베드 → 모든 환경에서 동작.
 /* OUTPUTS_START */
-const OUTPUTS = {"DATA_SHEET__PMC":["01_DATA_SHEET__PMC/01_CI-SHEET.png","01_DATA_SHEET__PMC/02_NAME CODE(PMC).png","01_DATA_SHEET__PMC/03_Auto Pipe Thk Cal Index.png","01_DATA_SHEET__PMC/04_Pipe Wall Thick Calculation Sheet.png","01_DATA_SHEET__PMC/05_PMC Auto Generator Sample 1.png","01_DATA_SHEET__PMC/06_PMC Auto Generator Sample 2.png","01_DATA_SHEET__PMC/07_PMC Auto Generator Sample 3.png"]};
+const OUTPUTS = {"DATA_SHEET__PMC":["01_DATA_SHEET__PMC/01_CI-SHEET.png","01_DATA_SHEET__PMC/02_NAME CODE(PMC).png","01_DATA_SHEET__PMC/03_Auto Pipe Thk Cal Index.png","01_DATA_SHEET__PMC/04_Pipe Wall Thick Calculation Sheet.png","01_DATA_SHEET__PMC/05_PMC Auto Generator Sample 1.png","01_DATA_SHEET__PMC/06_PMC Auto Generator Sample 2.png","01_DATA_SHEET__PMC/07_PMC Auto Generator Sample 3.png"],"DATA_SHEET__LINE_LIST":["02_DATA_SHEET__LINE_LIST/01_Line list Auto Gen Output sample.png","02_DATA_SHEET__LINE_LIST/02_Valve list Auto Gen Output sample.png"]};
 /* OUTPUTS_END */
 const keyOf = p => p.path.replace(/[\/\\]/g,"__");
 const outFiles = p => OUTPUTS[keyOf(p)] || [];
