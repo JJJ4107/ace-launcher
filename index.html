@@ -572,7 +572,7 @@ const UI = {
     statRun:"Operational", statRunD:"in production",
     unit:"", catUnit:"",
     tools:"tools", scripts:"scripts", run:"Run ▸", open:"Open ▸",
-    outBtn:"Outputs", outTitle:"Output samples", outCap:"Sample output — click to enlarge",
+    outBtn:"Outputs", outTitle:"Output samples", outCap:"Sample output — click to enlarge", outEmpty:"No output samples registered yet.",
     mStatus:"Status", mScripts:"Scripts", mCategory:"Category", mRuntime:"Runtime",
     mMainRun:"⚡ Main entry (runs all at once)", mMainScript:"⚡ Main script",
     mScriptsRun:"▤ Scripts to run", mComponent:"▤ Component scripts",
@@ -603,7 +603,7 @@ const UI = {
     statRun:"운영중", statRunD:"현업 적용 완료",
     unit:" 개", catUnit:" 분류",
     tools:"tools", scripts:"scripts", run:"실행 ▸", open:"열기 ▸",
-    outBtn:"출력물 보기", outTitle:"산출물 예시", outCap:"산출물 예시 — 클릭하면 크게",
+    outBtn:"출력물 보기", outTitle:"산출물 예시", outCap:"산출물 예시 — 클릭하면 크게", outEmpty:"아직 등록된 산출물이 없습니다.",
     mStatus:"상태", mScripts:"스크립트", mCategory:"카테고리", mRuntime:"실행 환경",
     mMainRun:"⚡ 대표 실행 (한 번에 전체 구동)", mMainScript:"⚡ 대표 스크립트",
     mScriptsRun:"▤ 실행할 스크립트", mComponent:"▤ 구성 스크립트",
@@ -666,9 +666,9 @@ const outFiles = p => OUTPUTS[keyOf(p)] || [];
 
 // 카드 푸터 좌측: 출력물이 있으면 '출력물 보기' 버튼, 없으면 스크립트 계수.
 function cardFoot(p){
+  // 모든 카드에 출력물 버튼 표시(이미지 없으면 클릭 시 안내). 이미지 있으면 개수 함께.
   const n = outFiles(p).length;
-  if(n) return `<button class="outbtn" type="button" data-out="${keyOf(p)}">📂 ${T('outBtn')} ${n}</button>`;
-  return `<span class="scount">▤ ${p.count} ${T('scripts')}</span>`;
+  return `<button class="outbtn" type="button" data-out="${keyOf(p)}">📂 ${T('outBtn')}${n?(' '+n):''}</button>`;
 }
 
 function cardHTML(p){
@@ -890,7 +890,7 @@ function openOutputs(key){
           <img class="lb-img" src="${src}" alt="${cap}" loading="lazy"
             onclick="window.open(this.src,'_blank')">`;
       }).join("")
-    : `<div class="lb-empty">${T('shotNone').replace("{f}","outputs/"+key+"/")}</div>`;
+    : `<div class="lb-empty">${T('outEmpty')}</div>`;
   $("#outModal").innerHTML = `
     <div class="m-h">
       <div class="cico">${p?p.ic:"📂"}</div>
