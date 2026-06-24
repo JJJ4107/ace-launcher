@@ -244,6 +244,19 @@
     background:#fff;cursor:zoom-in}
   body.light .shotwrap{background:#fff}
   body.light .shot{filter:none;background:#fff}
+  /* 카드 푸터: 출력물 보기 버튼 (스크립트 계수 자리) */
+  .outbtn{font-size:11.5px;font-weight:700;font-family:var(--mono);color:var(--accent2);
+    background:rgba(91,140,255,.12);border:1px solid rgba(91,140,255,.3);
+    padding:5px 11px;border-radius:9px;cursor:pointer;transition:.13s;display:flex;align-items:center;gap:6px}
+  .outbtn:hover{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06130f;border-color:transparent}
+  /* 출력물 라이트박스: 가로 넓게, 이미지 세로 스택 */
+  .lightbox{width:min(980px,100%);max-height:90vh;display:flex;flex-direction:column}
+  .lb-b{padding:16px 20px 20px;overflow:auto;display:flex;flex-direction:column;gap:14px}
+  .lb-img{display:block;width:100%;height:auto;object-fit:contain;border-radius:10px;
+    filter:invert(1) hue-rotate(180deg);background:#fff;cursor:zoom-in;border:1px solid var(--line)}
+  body.light .lb-img{filter:none}
+  .lb-cap{font-size:11px;color:var(--txt3);font-family:var(--mono);margin:2px 0 -4px}
+  .lb-empty{font-size:12.5px;color:var(--txt3);text-align:center;padding:30px 10px}
   .viewtag{flex:0 0 auto;font-size:10px;font-weight:700;color:var(--accent2);background:rgba(91,140,255,.12);
     border:1px solid rgba(91,140,255,.3);padding:4px 10px;border-radius:8px;cursor:pointer;transition:.13s}
   .viewtag:hover{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06130f;border-color:transparent}
@@ -337,6 +350,10 @@
 <!-- modal -->
 <div class="ov" id="ov">
   <div class="modal" id="modal"></div>
+</div>
+
+<div class="ov" id="ovOut">
+  <div class="modal lightbox" id="outModal"></div>
 </div>
 <div class="toast" id="toast"><span class="d"></span><span id="toast-t"></span></div>
 
@@ -555,6 +572,7 @@ const UI = {
     statRun:"Operational", statRunD:"in production",
     unit:"", catUnit:"",
     tools:"tools", scripts:"scripts", run:"Run ▸", open:"Open ▸",
+    outBtn:"Outputs", outTitle:"Output samples", outCap:"Sample output — click to enlarge",
     mStatus:"Status", mScripts:"Scripts", mCategory:"Category", mRuntime:"Runtime",
     mMainRun:"⚡ Main entry (runs all at once)", mMainScript:"⚡ Main script",
     mScriptsRun:"▤ Scripts to run", mComponent:"▤ Component scripts",
@@ -585,6 +603,7 @@ const UI = {
     statRun:"운영중", statRunD:"현업 적용 완료",
     unit:" 개", catUnit:" 분류",
     tools:"tools", scripts:"scripts", run:"실행 ▸", open:"열기 ▸",
+    outBtn:"출력물 보기", outTitle:"산출물 예시", outCap:"산출물 예시 — 클릭하면 크게",
     mStatus:"상태", mScripts:"스크립트", mCategory:"카테고리", mRuntime:"실행 환경",
     mMainRun:"⚡ 대표 실행 (한 번에 전체 구동)", mMainScript:"⚡ 대표 스크립트",
     mScriptsRun:"▤ 실행할 스크립트", mComponent:"▤ 구성 스크립트",
@@ -637,6 +656,21 @@ function renderNav(){
   $("#nav").querySelectorAll("a").forEach(a=>a.onclick=()=>{active=a.dataset.c;renderNav();renderContent();});
 }
 
+// 카드별 산출물(출력 예시) 이미지 manifest — build_web.py 가 outputs/<key>/*.png 스캔해 자동 갱신.
+// key = path 의 / → __ (shots 와 동일). 값 = 파일명 배열. fetch 없이 임베드 → 모든 환경에서 동작.
+/* OUTPUTS_START */
+const OUTPUTS = {"DATA_SHEET__PMC":["01_DATA_SHEET__PMC/01_PipeThick_Calculation.png"]};
+/* OUTPUTS_END */
+const keyOf = p => p.path.replace(/[\/\\]/g,"__");
+const outFiles = p => OUTPUTS[keyOf(p)] || [];
+
+// 카드 푸터 좌측: 출력물이 있으면 '출력물 보기' 버튼, 없으면 스크립트 계수.
+function cardFoot(p){
+  const n = outFiles(p).length;
+  if(n) return `<button class="outbtn" type="button" data-out="${keyOf(p)}">📂 ${T('outBtn')} ${n}</button>`;
+  return `<span class="scount">▤ ${p.count} ${T('scripts')}</span>`;
+}
+
 function cardHTML(p){
   const s = STATUS[p.status];
   return `<div class="card" data-id="${p.path}">
@@ -649,7 +683,7 @@ function cardHTML(p){
     </div>
     <div class="desc">${pDesc(p)}</div>
     <div class="card-foot">
-      <span class="scount">▤ ${p.count} ${T('scripts')}</span>
+      ${cardFoot(p)}
       <button class="run">${p.entry?T('run'):T('open')}</button>
     </div>
   </div>`;
@@ -679,6 +713,10 @@ function renderContent(){
   $("#empty").classList.toggle("show", !any);
   $("#content").querySelectorAll(".card").forEach(card=>{
     card.onclick = ()=>openModal(card.dataset.id);
+  });
+  // 출력물 보기 버튼 — 카드 클릭(모달)으로 전파 방지
+  $("#content").querySelectorAll(".outbtn").forEach(b=>{
+    b.onclick = (e)=>{ e.stopPropagation(); openOutputs(b.dataset.out); };
   });
 }
 
@@ -834,7 +872,36 @@ async function runScript(rel, btn){
 
 function closeModal(){ $("#ov").classList.remove("show"); }
 $("#ov").onclick = e=>{ if(e.target.id==="ov") closeModal(); };
-document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeModal(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeModal(); closeOutputs(); } });
+
+/* ============== OUTPUT SAMPLES (라이트박스) ============== */
+// 카드별 산출물 이미지 갤러리. 다크 테마에서 스크린샷과 동일하게 반전(.lb-img).
+function openOutputs(key){
+  const p = PROJECTS.find(x=>keyOf(x)===key);
+  const files = OUTPUTS[key] || [];
+  const title = p ? pTitle(p) : key;
+  const body = files.length
+    ? files.map(rel=>{
+        // rel = "NN_<key>/file.png" (outputs 기준 상대경로). 각 구간 인코딩, 캡션=파일명.
+        const src = "outputs/" + rel.split("/").map(encodeURIComponent).join("/");
+        const cap = rel.split("/").pop();
+        return `<div class="lb-cap">${cap}</div>
+          <img class="lb-img" src="${src}" alt="${cap}" loading="lazy"
+            onclick="window.open(this.src,'_blank')">`;
+      }).join("")
+    : `<div class="lb-empty">${T('shotNone').replace("{f}","outputs/"+key+"/")}</div>`;
+  $("#outModal").innerHTML = `
+    <div class="m-h">
+      <div class="cico">${p?p.ic:"📂"}</div>
+      <div style="min-width:0"><h3>${T('outTitle')}</h3><div class="sub">${title}</div></div>
+      <button class="m-x" id="ox">✕</button>
+    </div>
+    <div class="lb-b">${body}</div>`;
+  $("#ovOut").classList.add("show");
+  $("#ox").onclick = closeOutputs;
+}
+function closeOutputs(){ $("#ovOut").classList.remove("show"); }
+$("#ovOut").onclick = e=>{ if(e.target.id==="ovOut") closeOutputs(); };
 
 /* ===================== TOAST ===================== */
 let tt;
