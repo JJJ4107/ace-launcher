@@ -367,7 +367,7 @@
 const CATS = [
   {id:"data",    name:"데이터시트/리스트",     ic:"📊"},
   {id:"conv",    name:"3D 모델·스펙 변환",     ic:"🔄"},
-  {id:"hrsg",    name:"HRSG 3D Modeling",      ic:"🌡️"},
+  {id:"hrsg",    name:"HRSG 3D Auto Modeling from 2D Dwg",      ic:"🌡️"},
   {id:"arr",     name:"배치도/평면도 편집",   ic:"🗺️"},
   {id:"iso",     name:"아이소 도면 자동편집", ic:"📐"},
   {id:"steel",   name:"철골 구조 변환",        ic:"🏗️"},
@@ -419,7 +419,7 @@ const PROJECTS = [
    status:"run", count:13,
    desc:"빔·핸드레일·그레이팅·기둥 DXF를 E3D SCTN/PANE로 생성하는 일반 철골 구조 변환 파이프라인(00~03).",
    tags:["E3D","SCTN","PANE","Steel"]},
-  {cat:"hrsg", ic:"🌡️", title:"HRSG 3D Modeling", path:"HRSG",
+  {cat:"hrsg", ic:"🌡️", title:"HRSG 3D Auto Modeling from 2D Dwg", path:"HRSG",
    entry:["Ace_hrsg_runall.PY"],
    status:"run", count:22,
    desc:"HRSG 스택·케이싱·플랫폼·PPA 철골(100~403)을 E3D로 생성하고 노즐·장비까지 배치하는 전용 파이프라인.",
@@ -525,7 +525,7 @@ const CAT_EN = {
   iso:"Isometric Drawing Auto-Edit", arr:"Piping Arrangement Edit",
   steel:"Steel Structure Conversion", conv:"3D Model · Spec Conversion",
   support:"Pipe Support", data:"Datasheet / List", util:"Calculation · Utility",
-  hrsg:"HRSG 3D Modeling",
+  hrsg:"HRSG 3D Auto Modeling from 2D Dwg",
 };
 // 영문 오버레이 (path → 영문 제목/설명). 없으면 한글 원본 사용.
 const TR = {
@@ -537,7 +537,7 @@ const TR = {
   "PIPING_ARRANGEMENT_EDIT/SP3D":{title:"Arrangement Edit (SP3D)",desc:"SmartPlant 3D arrangement 100-series scripts: centerline, symbol, line-no, dimension, tag arrange."},
   "PIPING_ARRANGEMENT_EDIT/E3D":{title:"Arrangement Edit (E3D legacy)",desc:"Early E3D arrangement scripts (01–103) — line-no delete/stretch, dimension, tag layer change. Migrating to the new ACE_E3D."},
   "STEEL_STRUCTURE/2DTO3DFORE3D":{title:"Steel 2D→3D Conversion (E3D)",desc:"General steel-structure conversion pipeline (00–03) generating beams / handrails / grating / columns as E3D SCTN/PANE."},
-  "HRSG":{title:"HRSG 3D Modeling",desc:"Dedicated pipeline that builds HRSG stack / casing / platform / PPA steel (100–403) into E3D and places nozzles / equipment."},
+  "HRSG":{title:"HRSG 3D Auto Modeling from 2D Dwg",desc:"Dedicated pipeline that builds HRSG stack / casing / platform / PPA steel (100–403) into E3D and places nozzles / equipment."},
   "STEEL_STRUCTURE/TEKLATOE3D":{title:"Tekla IFC → E3D",desc:"Parses Tekla IFC via ifcopenshell, extracts extrusion profiles / world placement, converts IfcBeam/Plate to E3D SCTN/PANE."},
   "E3D_STP_CONV":{title:"STEP → E3D Equipment",desc:"Heuristically recognizes NX STEP B-rep shapes and converts them to E3D primitives (CYLI / BOX / cylinder). Handles nozzles / flanges / bolts."},
   "E3D_SPEC_GEN":{title:"E3D Piping Spec Auto Generator from PMC",desc:"Analyzes a piping-spec PDF and auto-generates E3D spec MACs. Assembled from catalog · valve family · recipes."},
@@ -661,7 +661,7 @@ function renderNav(){
 // 카드별 산출물(출력 예시) 이미지 manifest — build_web.py 가 outputs/<key>/*.png 스캔해 자동 갱신.
 // key = path 의 / → __ (shots 와 동일). 값 = 파일명 배열. fetch 없이 임베드 → 모든 환경에서 동작.
 /* OUTPUTS_START */
-const OUTPUTS = {"DATA_SHEET__PMC":["01_DATA_SHEET__PMC/01_CI-SHEET.png","01_DATA_SHEET__PMC/02_NAME CODE(PMC).png","01_DATA_SHEET__PMC/03_Auto Pipe Thk Cal Index.png","01_DATA_SHEET__PMC/04_Pipe Wall Thick Calculation Sheet.png","01_DATA_SHEET__PMC/05_PMC Auto Generator Sample 1.png","01_DATA_SHEET__PMC/06_PMC Auto Generator Sample 2.png","01_DATA_SHEET__PMC/07_PMC Auto Generator Sample 3.png"],"DATA_SHEET__LINE_LIST":["02_DATA_SHEET__LINE_LIST/01_Line list Auto Gen Output sample.png","02_DATA_SHEET__LINE_LIST/02_Valve list Auto Gen Output sample.png"],"MTO":["04_MTO/01_ISO BOM AUTO GEN FROM ISO DWG - MTO Data.png","04_MTO/02_ISO BOM AUTO GEN FROM ISO DWG - TOTAL BOM.png","04_MTO/03_ISO BOM AUTO GEN FROM ISO DWG - FAB MAT.png","04_MTO/04_ISO BOM AUTO GEN FROM ISO DWG - PIPE.png","04_MTO/05_ISO BOM AUTO GEN FROM ISO DWG - FITTING.png","04_MTO/06_ISO BOM AUTO GEN FROM ISO DWG - INST.png","04_MTO/07_WELDING BOM AUTO GEN FROM ISO DWG - ALL_WELD.png","04_MTO/08_WELDING BOM AUTO GEN FROM ISO DWG - FW.png","04_MTO/09_WELDING BOM AUTO GEN FROM ISO DWG - SW.png","04_MTO/10_WELDING BOM AUTO GEN FROM ISO DWG - SW TOTAL.png","04_MTO/11_WELDING BOM AUTO GEN FROM ISO DWG - FW TOTAL.png","04_MTO/12_WELDING BOM AUTO GEN FROM ISO DWG - MAT_CS.png"],"E3D_SPEC_GEN":["06_E3D_SPEC_GEN/01_PMS Spec Sample.png","06_E3D_SPEC_GEN/02_E3D Spec Auto Gen from PMC sample.png"],"PIPING_ARRANGEMENT_EDIT__ACE_E3D":[{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/01_E3D Input File for Piping GA 1.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/02_E3D Auto Output file for Piping GA 1.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/03_E3D Input File for Piping GA 2.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/04_E3D Auto Output file for Piping GA 2.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/05_E3D Input File for Piping GA 3.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/06_E3D Auto Output file for Piping GA 3.png"}],"PIPING_ARRANGEMENT_EDIT__SP3D":[{"n":"10_PIPING_ARRANGEMENT_EDIT__SP3D/01_SP3D Input File for Piping GA.png"},{"n":"10_PIPING_ARRANGEMENT_EDIT__SP3D/02_SP3D Auto Output file for Piping GA.png"}],"ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA":[{"n":"13_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA/01_E3D-SA ISO Input File.png"},{"n":"13_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA/02_E3D-SA ISO Auto Output File.png"}]};
+const OUTPUTS = {"DATA_SHEET__PMC":["01_DATA_SHEET__PMC/01_CI-SHEET.png","01_DATA_SHEET__PMC/02_NAME CODE(PMC).png","01_DATA_SHEET__PMC/03_Auto Pipe Thk Cal Index.png","01_DATA_SHEET__PMC/04_Pipe Wall Thick Calculation Sheet.png","01_DATA_SHEET__PMC/05_PMC Auto Generator Sample 1.png","01_DATA_SHEET__PMC/06_PMC Auto Generator Sample 2.png","01_DATA_SHEET__PMC/07_PMC Auto Generator Sample 3.png"],"DATA_SHEET__LINE_LIST":["02_DATA_SHEET__LINE_LIST/01_Line list Auto Gen Output sample.png","02_DATA_SHEET__LINE_LIST/02_Valve list Auto Gen Output sample.png"],"MTO":["04_MTO/01_ISO BOM AUTO GEN FROM ISO DWG - MTO Data.png","04_MTO/02_ISO BOM AUTO GEN FROM ISO DWG - TOTAL BOM.png","04_MTO/03_ISO BOM AUTO GEN FROM ISO DWG - FAB MAT.png","04_MTO/04_ISO BOM AUTO GEN FROM ISO DWG - PIPE.png","04_MTO/05_ISO BOM AUTO GEN FROM ISO DWG - FITTING.png","04_MTO/06_ISO BOM AUTO GEN FROM ISO DWG - INST.png","04_MTO/07_WELDING BOM AUTO GEN FROM ISO DWG - ALL_WELD.png","04_MTO/08_WELDING BOM AUTO GEN FROM ISO DWG - FW.png","04_MTO/09_WELDING BOM AUTO GEN FROM ISO DWG - SW.png","04_MTO/10_WELDING BOM AUTO GEN FROM ISO DWG - SW TOTAL.png","04_MTO/11_WELDING BOM AUTO GEN FROM ISO DWG - FW TOTAL.png","04_MTO/12_WELDING BOM AUTO GEN FROM ISO DWG - MAT_CS.png"],"E3D_SPEC_GEN":["06_E3D_SPEC_GEN/01_PMS Spec Sample.png","06_E3D_SPEC_GEN/02_E3D Spec Auto Gen from PMC sample.png"],"PIPING_ARRANGEMENT_EDIT__ACE_E3D":[{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/01_E3D Input File for Piping GA 1.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/02_E3D Auto Output file for Piping GA 1.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/03_E3D Input File for Piping GA 2.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/04_E3D Auto Output file for Piping GA 2.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/05_E3D Input File for Piping GA 3.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/06_E3D Auto Output file for Piping GA 3.png"}],"PIPING_ARRANGEMENT_EDIT__SP3D":[{"n":"10_PIPING_ARRANGEMENT_EDIT__SP3D/01_SP3D Input File for Piping GA.png"},{"n":"10_PIPING_ARRANGEMENT_EDIT__SP3D/02_SP3D Auto Output file for Piping GA.png"}],"ISO_AUTO_EDIT__ISO UPDATE NEW":[{"n":"12_ISO_AUTO_EDIT__ISO UPDATE NEW/01_ISO Input File 1.png"},{"n":"12_ISO_AUTO_EDIT__ISO UPDATE NEW/02_ISO Auto Output File 1.png"},{"n":"12_ISO_AUTO_EDIT__ISO UPDATE NEW/03_ISO Input File 2.png"},{"n":"12_ISO_AUTO_EDIT__ISO UPDATE NEW/04_ISO Auto Output File 2.png"},"12_ISO_AUTO_EDIT__ISO UPDATE NEW/05_ISO Auto Output File 2-1.png"],"ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA":[{"n":"13_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA/01_E3D-SA ISO Input File.png"},{"n":"13_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA/02_E3D-SA ISO Auto Output File.png"}],"ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_SP3D":[{"n":"14_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_SP3D/01_SP3D ISO Input File.png"},{"n":"14_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_SP3D/02_SP3D ISO Auto Output File.png"}]};
 /* OUTPUTS_END */
 const keyOf = p => p.path.replace(/[\/\\]/g,"__");
 const outFiles = p => OUTPUTS[keyOf(p)] || [];
