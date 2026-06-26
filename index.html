@@ -446,6 +446,11 @@ const PROJECTS = [
    status:"run", count:5,
    desc:"E3D 모델을 CAESAR II 입력용 PCF로 추출. TTY용 단일 평면 MAC 엔진 + Tkinter 로그인 GUI.",
    tags:["E3D","PCF","CAESAR II","Stress"]},
+  {cat:"conv", ic:"🧷", title:"E3D Macro File(PIPE) ---> PCF(CAESAR II)", path:"CAESARII/E3D_MacroToPCF",
+   entry:["macrotopcf_gui.py"],
+   status:"run", count:7,
+   desc:"E3D 매크로 파일(PIPE)을 CAESAR II 입력용 PCF로 변환. Tkinter GUI.",
+   tags:["E3D","Macro","PCF","CAESAR II"]},
 
   // ---- DATA ----
   {cat:"data", ic:"📏", title:"Pipe Wall Thickness Cal & PMC Auto Generator", path:"DATA_SHEET/PMC",
@@ -542,6 +547,7 @@ const TR = {
   "E3D_STP_CONV":{title:"STEP → E3D Equipment",desc:"Heuristically recognizes NX STEP B-rep shapes and converts them to E3D primitives (CYLI / BOX / cylinder). Handles nozzles / flanges / bolts."},
   "E3D_SPEC_GEN":{title:"E3D Piping Spec Auto Generator from PMC",desc:"Analyzes a piping-spec PDF and auto-generates E3D spec MACs. Assembled from catalog · valve family · recipes."},
   "CAESARII":{title:"E3D → PCF (CAESAR II)",desc:"Extracts E3D model to CAESAR II PCF input. Single flat MAC engine for TTY + Tkinter login GUI."},
+  "CAESARII/E3D_MacroToPCF":{title:"E3D Macro File(PIPE) ---> PCF(CAESAR II)",desc:"Converts an E3D macro file (PIPE) into CAESAR II PCF input. Tkinter GUI."},
   "DATA_SHEET/LINE_LIST":{title:"Line / Valve List Auto Generator from P&ID & PMC",desc:"Builds a LINE LIST automatically by decoding KKS tags from P&ID (PDF/DXF). Includes From/To derivation and valve/symbol recognition."},
   "DATA_SHEET/PMC":{title:"Pipe Wall Thickness Cal & PMC Auto Generator",desc:"ASME B31.1 pipe thickness + multi CI-sheet generation. Outputs PMC results to Excel via allowable-stress table, material mapping, PDF parsing."},
   "DATA_SHEET/SAFETY_VALV_SIZING":{title:"Safety Valve (PSV) Sizing",desc:"Computes relief area with API 520 formulas (steam/gas/liquid), then selects API 526 orifice (D–T). Tkinter input GUI."},
