@@ -250,8 +250,15 @@
     padding:5px 11px;border-radius:9px;cursor:pointer;transition:.13s;display:flex;align-items:center;gap:6px}
   .outbtn:hover{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06130f;border-color:transparent}
   /* 출력물 라이트박스: 가로 넓게, 이미지 세로 스택 */
-  .lightbox{width:min(980px,100%);max-height:90vh;display:flex;flex-direction:column}
+  .lightbox{width:min(1180px,100%);max-height:92vh;display:flex;flex-direction:column}
   .lb-b{padding:16px 20px 20px;overflow:auto;display:flex;flex-direction:column;gap:14px}
+  /* 가이드 PDF 뷰어 */
+  .lb-pdf{width:100%;height:80vh;border:1px solid var(--line);border-radius:10px;background:#fff}
+  .m-open{margin-left:auto;text-decoration:none;font-size:16px;font-weight:800;color:var(--accent2);
+    border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:4px 11px;line-height:1.2}
+  .m-open:hover{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06130f;border-color:transparent}
+  .m-open + .m-x{margin-left:8px}
+  .foot-n{font-size:11.5px;font-weight:700;font-family:var(--mono);color:var(--txt3)}
   .lb-img{display:block;width:100%;height:auto;object-fit:contain;border-radius:10px;
     filter:invert(1) hue-rotate(180deg);background:#fff;cursor:zoom-in;border:1px solid var(--line)}
   body.light .lb-img{filter:none}
@@ -377,7 +384,7 @@ const CATS = [
 
 const PROJECTS = [
   // ---- ISO ----
-  {cat:"iso", ic:"🧪", title:"ISO Updater (리팩터링)", path:"ISO_AUTO_EDIT/ISO UPDATE NEW",
+  {cat:"iso", ic:"🧪", title:"E3D ISO Drawing Updater", path:"ISO_AUTO_EDIT/ISO UPDATE NEW",
    entry:["iso_updater.py"],
    status:"lab", count:22,
    desc:"기존 아이소 편집 스크립트를 src 패키지(handler·*_edit 모듈) 구조로 재정리한 차세대 통합 버전.",
@@ -424,8 +431,8 @@ const PROJECTS = [
    status:"run", count:22,
    desc:"HRSG 스택·케이싱·플랫폼·PPA 철골(100~403)을 E3D로 생성하고 노즐·장비까지 배치하는 전용 파이프라인.",
    tags:["E3D","HRSG","Stack","Casing","Nozzle"]},
-  {cat:"steel", ic:"🔩", title:"Tekla IFC → E3D", path:"STEEL_STRUCTURE/TEKLATOE3D",
-   entry:["teklatoe3d.py"],
+  {cat:"steel", ic:"🔩", title:"Tekla IFC → E3D Structure Model", path:"STEEL_STRUCTURE/TEKLATOE3D",
+   entry:["teklaifctoe3d.py"],
    status:"run", count:2,
    desc:"Tekla IFC를 ifcopenshell로 파싱해 압출 프로파일·월드 배치를 추출, IfcBeam/Plate를 E3D SCTN·PANE로 변환.",
    tags:["IFC","ifcopenshell","Tekla","SCTN"]},
@@ -461,7 +468,7 @@ const PROJECTS = [
    status:"run", count:7,
    desc:"E3D 매크로 파일(PIPE)을 CAESAR II 입력용 PCF로 변환. Tkinter GUI.",
    tags:["E3D","Macro","PCF","CAESAR II"]},
-  {cat:"conv", ic:"🧷", title:"CAESAR II → E3D Macro", path:"CAESARII/caesariitoe3dmac",
+  {cat:"conv", ic:"🧷", title:"Caesar II → Data View & 3D Model Converter", path:"CAESARII/caesariitoe3dmac",
    entry:["caesarii_to_e3d_gui.py"],
    status:"run", count:7,
    desc:"CAESAR II 모델을 E3D Equi 매크로로 변환 + 3D 프리뷰 검증 (E3D→PCF 역변환).",
@@ -552,20 +559,20 @@ const TR = {
   "ISO_AUTO_EDIT/ISO_AUTO_EDIT_FOR_SP3D":{title:"SP3D Isometric Auto-Edit",desc:"Batch-corrects SmartPlant 3D isometric drawings: insulation / dimension / weld-no / elbow / elevation text, item-no rotation and support symbols."},
   "ISO_AUTO_EDIT/ISO_AUTO_EDIT_FOR_E3DSA":{title:"E3D-SA Isometric Edit",desc:"Cleanup for E3D Stress (SA) isometrics — 11 steps following SA output rules (delete tee text / spec-no / flange info, etc.)."},
   "ISO_AUTO_EDIT/ISO_AUTO_EDIT_FOR_PDS":{title:"PDS Isometric Auto-Edit",desc:"Dimension / item-no / weld-no / elbow editing of Intergraph PDS isometric DXF, plus ISO BOM Excel export."},
-  "ISO_AUTO_EDIT/ISO UPDATE NEW":{title:"ISO Updater (refactored)",desc:"Next-gen integrated version reorganizing the isometric-edit scripts into an src package (handler · *_edit modules)."},
+  "ISO_AUTO_EDIT/ISO UPDATE NEW":{title:"E3D ISO Drawing Updater",desc:"Next-gen integrated version reorganizing the isometric-edit scripts into an src package (handler · *_edit modules)."},
   "PIPING_ARRANGEMENT_EDIT/ACE_E3D":{title:"ACE Arrangement Edit (E3D)",desc:"E3D arrangement (plan) 200-series pipeline — centerline, symbols, line-no stretch, dimensioning, tag-no arrange, with option dialog."},
   "PIPING_ARRANGEMENT_EDIT/SP3D":{title:"Arrangement Edit (SP3D)",desc:"SmartPlant 3D arrangement 100-series scripts: centerline, symbol, line-no, dimension, tag arrange."},
   "PIPING_ARRANGEMENT_EDIT/E3D":{title:"Arrangement Edit (E3D legacy)",desc:"Early E3D arrangement scripts (01–103) — line-no delete/stretch, dimension, tag layer change. Migrating to the new ACE_E3D."},
   "STEEL_STRUCTURE/2DTO3DFORE3D":{title:"Steel 2D→3D Conversion (E3D)",desc:"General steel-structure conversion pipeline (00–03) generating beams / handrails / grating / columns as E3D SCTN/PANE."},
   "HRSG":{title:"HRSG 3D Auto Modeling from 2D Dwg",desc:"Dedicated pipeline that builds HRSG stack / casing / platform / PPA steel (100–403) into E3D and places nozzles / equipment."},
-  "STEEL_STRUCTURE/TEKLATOE3D":{title:"Tekla IFC → E3D",desc:"Parses Tekla IFC via ifcopenshell, extracts extrusion profiles / world placement, converts IfcBeam/Plate to E3D SCTN/PANE."},
+  "STEEL_STRUCTURE/TEKLATOE3D":{title:"Tekla IFC → E3D Structure Model",desc:"Parses Tekla IFC via ifcopenshell, extracts extrusion profiles / world placement, converts IfcBeam/Plate to E3D SCTN/PANE."},
   "STEEL_STRUCTURE/E3DTOTEKLA":{title:"E3D MAC → Tekla IFC",desc:"Converts an E3D MAC into Tekla IFC (reverse of TEKLATOE3D). SCTN/PANE → IfcBeam/Plate."},
   "E3D_STP_CONV":{title:"STEP → E3D Equipment",desc:"Heuristically recognizes NX STEP B-rep shapes and converts them to E3D primitives (CYLI / BOX / cylinder). Handles nozzles / flanges / bolts."},
   "E3D_SPEC_GEN":{title:"E3D Piping Spec Auto Generator from PMC",desc:"Analyzes a piping-spec PDF and auto-generates E3D spec MACs. Assembled from catalog · valve family · recipes."},
   "SP3D_SPEC_GEN":{title:"SP3D Piping Spec Auto Generator from PMC",desc:"Analyzes a piping-spec PDF and auto-generates a SmartPlant 3D reference-data spec workbook (HanaMaster catalogue based)."},
   "CAESARII":{title:"E3D → PCF (CAESAR II)",desc:"Extracts E3D model to CAESAR II PCF input. Single flat MAC engine for TTY + Tkinter login GUI."},
   "CAESARII/E3D_MacroToPCF":{title:"E3D Macro File(PIPE) ---> PCF(CAESAR II)",desc:"Converts an E3D macro file (PIPE) into CAESAR II PCF input. Tkinter GUI."},
-  "CAESARII/caesariitoe3dmac":{title:"CAESAR II → E3D Macro",desc:"Converts a CAESAR II model into an E3D Equi macro with 3D preview check (reverse of E3D → PCF)."},
+  "CAESARII/caesariitoe3dmac":{title:"Caesar II → Data View & 3D Model Converter",desc:"Converts a CAESAR II model into an E3D Equi macro with 3D preview check (reverse of E3D → PCF)."},
   "DATA_SHEET/LINE_LIST":{title:"Line / Valve List Auto Generator from P&ID & PMC",desc:"Builds a LINE LIST automatically by decoding KKS tags from P&ID (PDF/DXF). Includes From/To derivation and valve/symbol recognition."},
   "DATA_SHEET/PMC":{title:"Pipe Wall Thickness Cal & PMC Auto Generator",desc:"ASME B31.1 pipe thickness + multi CI-sheet generation. Outputs PMC results to Excel via allowable-stress table, material mapping, PDF parsing."},
   "DATA_SHEET/SAFETY_VALV_SIZING":{title:"Safety Valve (PSV) Sizing",desc:"Computes relief area with API 520 formulas (steam/gas/liquid), then selects API 526 orifice (D–T). Tkinter input GUI."},
@@ -598,7 +605,7 @@ const UI = {
     statRun:"Operational", statRunD:"in production",
     unit:"", catUnit:"",
     tools:"tools", scripts:"scripts", run:"Run ▸", open:"Open ▸",
-    outBtn:"Outputs", outTitle:"Output samples", outCap:"Sample output — click to enlarge", outEmpty:"No output samples registered yet.",
+    outBtn:"GUIDE", outTitle:"Guide", outCap:"Program guide (PDF)", outEmpty:"No guide available yet.",
     mStatus:"Status", mScripts:"Scripts", mCategory:"Category", mRuntime:"Runtime",
     mMainRun:"⚡ Main entry (runs all at once)", mMainScript:"⚡ Main script",
     mScriptsRun:"▤ Scripts to run", mComponent:"▤ Component scripts",
@@ -629,7 +636,7 @@ const UI = {
     statRun:"운영중", statRunD:"현업 적용 완료",
     unit:" 개", catUnit:" 분류",
     tools:"tools", scripts:"scripts", run:"실행 ▸", open:"열기 ▸",
-    outBtn:"출력물 보기", outTitle:"산출물 예시", outCap:"산출물 예시 — 클릭하면 크게", outEmpty:"아직 등록된 산출물이 없습니다.",
+    outBtn:"GUIDE", outTitle:"가이드", outCap:"프로그램 가이드 (PDF)", outEmpty:"아직 가이드가 없습니다.",
     mStatus:"상태", mScripts:"스크립트", mCategory:"카테고리", mRuntime:"실행 환경",
     mMainRun:"⚡ 대표 실행 (한 번에 전체 구동)", mMainScript:"⚡ 대표 스크립트",
     mScriptsRun:"▤ 실행할 스크립트", mComponent:"▤ 구성 스크립트",
@@ -685,16 +692,19 @@ function renderNav(){
 // 카드별 산출물(출력 예시) 이미지 manifest — build_web.py 가 outputs/<key>/*.png 스캔해 자동 갱신.
 // key = path 의 / → __ (shots 와 동일). 값 = 파일명 배열. fetch 없이 임베드 → 모든 환경에서 동작.
 /* OUTPUTS_START */
-const OUTPUTS = {"DATA_SHEET__PMC":["01_DATA_SHEET__PMC/01_CI-SHEET.png","01_DATA_SHEET__PMC/02_NAME CODE(PMC).png","01_DATA_SHEET__PMC/03_Auto Pipe Thk Cal Index.png","01_DATA_SHEET__PMC/04_Pipe Wall Thick Calculation Sheet.png","01_DATA_SHEET__PMC/05_PMC Auto Generator Sample 1.png","01_DATA_SHEET__PMC/06_PMC Auto Generator Sample 2.png","01_DATA_SHEET__PMC/07_PMC Auto Generator Sample 3.png"],"DATA_SHEET__LINE_LIST":["02_DATA_SHEET__LINE_LIST/01_Line list Auto Gen Output sample.png","02_DATA_SHEET__LINE_LIST/02_Valve list Auto Gen Output sample.png"],"MTO":["04_MTO/01_ISO BOM AUTO GEN FROM ISO DWG - MTO Data.png","04_MTO/02_ISO BOM AUTO GEN FROM ISO DWG - TOTAL BOM.png","04_MTO/03_ISO BOM AUTO GEN FROM ISO DWG - FAB MAT.png","04_MTO/04_ISO BOM AUTO GEN FROM ISO DWG - PIPE.png","04_MTO/05_ISO BOM AUTO GEN FROM ISO DWG - FITTING.png","04_MTO/06_ISO BOM AUTO GEN FROM ISO DWG - INST.png","04_MTO/07_WELDING BOM AUTO GEN FROM ISO DWG - ALL_WELD.png","04_MTO/08_WELDING BOM AUTO GEN FROM ISO DWG - FW.png","04_MTO/09_WELDING BOM AUTO GEN FROM ISO DWG - SW.png","04_MTO/10_WELDING BOM AUTO GEN FROM ISO DWG - SW TOTAL.png","04_MTO/11_WELDING BOM AUTO GEN FROM ISO DWG - FW TOTAL.png","04_MTO/12_WELDING BOM AUTO GEN FROM ISO DWG - MAT_CS.png"],"E3D_STP_CONV":["05_E3D_STP_CONV/INPUT1.png","05_E3D_STP_CONV/OUTPUT1-1.png","05_E3D_STP_CONV/OUTPUT1-2.png","05_E3D_STP_CONV/OUTPUT1.png","05_E3D_STP_CONV/OUTPUT2.png","05_E3D_STP_CONV/OUTPUT3.png","05_E3D_STP_CONV/input10-1.png","05_E3D_STP_CONV/input10.png"],"E3D_SPEC_GEN":["06_E3D_SPEC_GEN/01_PMS Spec Sample.png","06_E3D_SPEC_GEN/02_E3D Spec Auto Gen from PMC sample.png"],"CAESARII__E3D_MacroToPCF":["08_CAESARII__E3D_MacroToPCF/01_E3D Macro to PCF - Input.png","08_CAESARII__E3D_MacroToPCF/02_E3D Macro to PCF - Input 2.png","08_CAESARII__E3D_MacroToPCF/03_E3D Macro to PCF - Output.png",{"n":"08_CAESARII__E3D_MacroToPCF/04_E3D Macro to PCF - DXF Output 1.png"},{"n":"08_CAESARII__E3D_MacroToPCF/05_E3D Macro to PCF - DXF Output 2.png"},{"n":"08_CAESARII__E3D_MacroToPCF/06_E3D Macro to PCF - DXF Output 3.png"},{"n":"08_CAESARII__E3D_MacroToPCF/07_E3D Macro to PCF - DXF Output 4.png"},{"n":"08_CAESARII__E3D_MacroToPCF/08_E3D Macro to PCF - DXF Output 5.png"},{"n":"08_CAESARII__E3D_MacroToPCF/09_E3D Macro to PCF - DXF Output 6.png"}],"CAESARII__caesariitoe3dmac":["08_CAESARII__caesariitoe3dmac/01_CAESAR II to E3D - Input 1.png","08_CAESARII__caesariitoe3dmac/02_CAESAR II to E3D - Input 2.png","08_CAESARII__caesariitoe3dmac/03_CAESAR II to E3D - Input 3.png","08_CAESARII__caesariitoe3dmac/04_CAESAR II to E3D - Data Preview.png","08_CAESARII__caesariitoe3dmac/05_CAESAR II to E3D - E3D Output.png","08_CAESARII__caesariitoe3dmac/06_CAESAR II to E3D - E3D Equi 1.jpg","08_CAESARII__caesariitoe3dmac/07_CAESAR II to E3D - E3D Equi 2.jpg","08_CAESARII__caesariitoe3dmac/08_CAESAR II to E3D - Displacement 1.png","08_CAESARII__caesariitoe3dmac/09_CAESAR II to E3D - Displacement 2.png",{"n":"08_CAESARII__caesariitoe3dmac/10_CAESAR II to E3D - DXF 1.png"},{"n":"08_CAESARII__caesariitoe3dmac/11_CAESAR II to E3D - DXF 2.png"},{"n":"08_CAESARII__caesariitoe3dmac/12_CAESAR II to E3D - DXF 3.png"},{"n":"08_CAESARII__caesariitoe3dmac/13_CAESAR II to E3D - DXF 4.png"}],"HRSG":[{"n":"08_HRSG/01_Platform 2D Input.png"},"08_HRSG/02_Platform 3D Auto Output.png","08_HRSG/03_Platform 3D Auto Output (detail).png",{"n":"08_HRSG/CASING_INPUT1.png"},{"n":"08_HRSG/CASING_INPUT2.png"},"08_HRSG/CASING_OUTPUT1.png","08_HRSG/CASING_OUTPUT2.png",{"n":"08_HRSG/INLET_DUCT_INPUT1.png"},"08_HRSG/INLET_DUCT_OUTPUT1.png",{"n":"08_HRSG/STACK_INPUT1.png"},{"n":"08_HRSG/STACK_INPUT2.png"},"08_HRSG/STACK_OUPUT1.png","08_HRSG/STACK_OUTPUT2.png","08_HRSG/STACK_OUTPUT3.png"],"PIPING_ARRANGEMENT_EDIT__ACE_E3D":[{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/01_E3D Input File for Piping GA 1.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/02_E3D Auto Output file for Piping GA 1.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/03_E3D Input File for Piping GA 2.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/04_E3D Auto Output file for Piping GA 2.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/05_E3D Input File for Piping GA 3.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/06_E3D Auto Output file for Piping GA 3.png"}],"PIPING_ARRANGEMENT_EDIT__SP3D":[{"n":"10_PIPING_ARRANGEMENT_EDIT__SP3D/01_SP3D Input File for Piping GA.png"},{"n":"10_PIPING_ARRANGEMENT_EDIT__SP3D/02_SP3D Auto Output file for Piping GA.png"}],"ISO_AUTO_EDIT__ISO UPDATE NEW":[{"n":"12_ISO_AUTO_EDIT__ISO UPDATE NEW/01_ISO Input File 1.png"},{"n":"12_ISO_AUTO_EDIT__ISO UPDATE NEW/02_ISO Auto Output File 1.png"},{"n":"12_ISO_AUTO_EDIT__ISO UPDATE NEW/03_ISO Input File 2.png"},{"n":"12_ISO_AUTO_EDIT__ISO UPDATE NEW/04_ISO Auto Output File 2.png"},"12_ISO_AUTO_EDIT__ISO UPDATE NEW/05_ISO Auto Output File 2-1.png"],"ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA":[{"n":"13_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA/01_E3D-SA ISO Input File.png"},{"n":"13_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA/02_E3D-SA ISO Auto Output File.png"}],"ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_SP3D":[{"n":"14_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_SP3D/01_SP3D ISO Input File.png"},{"n":"14_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_SP3D/02_SP3D ISO Auto Output File.png"}],"STEEL_STRUCTURE__2DTO3DFORE3D":[{"n":"16_STEEL_STRUCTURE__2DTO3DFORE3D/01_input1-1.png"},"16_STEEL_STRUCTURE__2DTO3DFORE3D/02_output1-1.png",{"n":"16_STEEL_STRUCTURE__2DTO3DFORE3D/03_input1-2.png"},"16_STEEL_STRUCTURE__2DTO3DFORE3D/04_output1-2.png",{"n":"16_STEEL_STRUCTURE__2DTO3DFORE3D/05_input1-3.png"},"16_STEEL_STRUCTURE__2DTO3DFORE3D/06_output1-3.png","16_STEEL_STRUCTURE__2DTO3DFORE3D/07_outputall.png"],"STEEL_STRUCTURE__TEKLATOE3D":["17_STEEL_STRUCTURE__TEKLATOE3D/output0.png","17_STEEL_STRUCTURE__TEKLATOE3D/output02.png","17_STEEL_STRUCTURE__TEKLATOE3D/output1.png","17_STEEL_STRUCTURE__TEKLATOE3D/output3.png","17_STEEL_STRUCTURE__TEKLATOE3D/output4.png","17_STEEL_STRUCTURE__TEKLATOE3D/output5.png"],"STEEL_STRUCTURE__E3DTOTEKLA":["18_STEEL_STRUCTURE__E3DTOTEKLA/01_E3D to Tekla - E3D Input.png","18_STEEL_STRUCTURE__E3DTOTEKLA/02_E3D to Tekla - Tekla Output 1.png","18_STEEL_STRUCTURE__E3DTOTEKLA/03_E3D to Tekla - Tekla Output 2.png"],"SUPPORT_DWG_EDIT__ACE_SUPP_E3D":[{"n":"18_SUPPORT_DWG_EDIT__ACE_SUPP_E3D/01_Support Plan Input 1.png"},{"n":"18_SUPPORT_DWG_EDIT__ACE_SUPP_E3D/02_Support Plan Auto Output 1.png"},{"n":"18_SUPPORT_DWG_EDIT__ACE_SUPP_E3D/03_Support Plan Input 2.png"},{"n":"18_SUPPORT_DWG_EDIT__ACE_SUPP_E3D/04_Support Plan Auto Output 2.png"},{"n":"18_SUPPORT_DWG_EDIT__ACE_SUPP_E3D/05_Support Plan Input 3.png"},{"n":"18_SUPPORT_DWG_EDIT__ACE_SUPP_E3D/06_Support Plan Auto Output 3.png"}]};
+const OUTPUTS = {"DATA_SHEET__PMC":["01_DATA_SHEET__PMC/01_CI-SHEET.png","01_DATA_SHEET__PMC/02_NAME CODE(PMC).png","01_DATA_SHEET__PMC/03_Auto Pipe Thk Cal Index.png","01_DATA_SHEET__PMC/04_Pipe Wall Thick Calculation Sheet.png","01_DATA_SHEET__PMC/05_PMC Auto Generator Sample 1.png","01_DATA_SHEET__PMC/06_PMC Auto Generator Sample 2.png","01_DATA_SHEET__PMC/07_PMC Auto Generator Sample 3.png"],"DATA_SHEET__LINE_LIST":["02_DATA_SHEET__LINE_LIST/01_Line list Auto Gen Output sample.png","02_DATA_SHEET__LINE_LIST/02_Valve list Auto Gen Output sample.png"],"MTO":["04_MTO/01_ISO BOM AUTO GEN FROM ISO DWG - MTO Data.png","04_MTO/02_ISO BOM AUTO GEN FROM ISO DWG - TOTAL BOM.png","04_MTO/03_ISO BOM AUTO GEN FROM ISO DWG - FAB MAT.png","04_MTO/04_ISO BOM AUTO GEN FROM ISO DWG - PIPE.png","04_MTO/05_ISO BOM AUTO GEN FROM ISO DWG - FITTING.png","04_MTO/06_ISO BOM AUTO GEN FROM ISO DWG - INST.png","04_MTO/07_WELDING BOM AUTO GEN FROM ISO DWG - ALL_WELD.png","04_MTO/08_WELDING BOM AUTO GEN FROM ISO DWG - FW.png","04_MTO/09_WELDING BOM AUTO GEN FROM ISO DWG - SW.png","04_MTO/10_WELDING BOM AUTO GEN FROM ISO DWG - SW TOTAL.png","04_MTO/11_WELDING BOM AUTO GEN FROM ISO DWG - FW TOTAL.png","04_MTO/12_WELDING BOM AUTO GEN FROM ISO DWG - MAT_CS.png"],"E3D_STP_CONV":["05_E3D_STP_CONV/INPUT1.png","05_E3D_STP_CONV/OUTPUT1-1.png","05_E3D_STP_CONV/OUTPUT1-2.png","05_E3D_STP_CONV/OUTPUT1.png","05_E3D_STP_CONV/OUTPUT2.png","05_E3D_STP_CONV/OUTPUT3.png","05_E3D_STP_CONV/input10-1.png","05_E3D_STP_CONV/input10.png"],"E3D_SPEC_GEN":["06_E3D_SPEC_GEN/01_PMS Spec Sample.png","06_E3D_SPEC_GEN/02_E3D Spec Auto Gen from PMC sample.png"],"CAESARII__E3D_MacroToPCF":["08_CAESARII__E3D_MacroToPCF/01_E3D Macro to PCF - Input.png","08_CAESARII__E3D_MacroToPCF/02_E3D Macro to PCF - Input 2.png","08_CAESARII__E3D_MacroToPCF/03_E3D Macro to PCF - Output.png",{"n":"08_CAESARII__E3D_MacroToPCF/04_E3D Macro to PCF - DXF Output 1.png"},{"n":"08_CAESARII__E3D_MacroToPCF/05_E3D Macro to PCF - DXF Output 2.png"},{"n":"08_CAESARII__E3D_MacroToPCF/06_E3D Macro to PCF - DXF Output 3.png"},{"n":"08_CAESARII__E3D_MacroToPCF/07_E3D Macro to PCF - DXF Output 4.png"},{"n":"08_CAESARII__E3D_MacroToPCF/08_E3D Macro to PCF - DXF Output 5.png"},{"n":"08_CAESARII__E3D_MacroToPCF/09_E3D Macro to PCF - DXF Output 6.png"}],"CAESARII__caesariitoe3dmac":["08_CAESARII__caesariitoe3dmac/01_CAESAR II to E3D - Input 1.png","08_CAESARII__caesariitoe3dmac/02_CAESAR II to E3D - Input 2.png","08_CAESARII__caesariitoe3dmac/03_CAESAR II to E3D - Input 3.png","08_CAESARII__caesariitoe3dmac/04_CAESAR II to E3D - Data Preview.png","08_CAESARII__caesariitoe3dmac/05_CAESAR II to E3D - E3D Output.png","08_CAESARII__caesariitoe3dmac/06_CAESAR II to E3D - E3D Equi 1.jpg","08_CAESARII__caesariitoe3dmac/07_CAESAR II to E3D - E3D Equi 2.jpg","08_CAESARII__caesariitoe3dmac/08_CAESAR II to E3D - Displacement 1.png","08_CAESARII__caesariitoe3dmac/09_CAESAR II to E3D - Displacement 2.png","08_CAESARII__caesariitoe3dmac/10_CAESAR II to E3D - DXF 1.png","08_CAESARII__caesariitoe3dmac/11_CAESAR II to E3D - DXF 2.png",{"n":"08_CAESARII__caesariitoe3dmac/12_CAESAR II to E3D - DXF 3.png"},"08_CAESARII__caesariitoe3dmac/12_CAESAR II to E3D - DXF_Deform.png",{"n":"08_CAESARII__caesariitoe3dmac/13_CAESAR II to E3D - Deform2.png"},{"n":"08_CAESARII__caesariitoe3dmac/14_CAESAR II to E3D - Deform3.png"},"08_CAESARII__caesariitoe3dmac/CII_INSULATION_ON0.png","08_CAESARII__caesariitoe3dmac/CII_INSULATION_ON1.png","08_CAESARII__caesariitoe3dmac/E3D_DISPLACEMENT_OUTPUT1.png","08_CAESARII__caesariitoe3dmac/E3D_DISPLACEMENT_OUTPUT2.png","08_CAESARII__caesariitoe3dmac/E3D_DISPLACEMENT_OUTPUT3.png","08_CAESARII__caesariitoe3dmac/E3D_INSU_OUTPUT1.png","08_CAESARII__caesariitoe3dmac/E3D_INSU_OUTPUT2.png","08_CAESARII__caesariitoe3dmac/E3D_INSU_OUTPUT3.png","08_CAESARII__caesariitoe3dmac/E3D_OUTPUT1.png","08_CAESARII__caesariitoe3dmac/E3D_OUTPUT2.png","08_CAESARII__caesariitoe3dmac/SP3D_IFC1.png","08_CAESARII__caesariitoe3dmac/SP3D_IFC2.png"],"HRSG":[{"n":"08_HRSG/01_Platform 2D Input.png"},"08_HRSG/02_Platform 3D Auto Output.png","08_HRSG/03_Platform 3D Auto Output (detail).png",{"n":"08_HRSG/CASING_INPUT1.png"},{"n":"08_HRSG/CASING_INPUT2.png"},"08_HRSG/CASING_OUTPUT1.png","08_HRSG/CASING_OUTPUT2.png",{"n":"08_HRSG/INLET_DUCT_INPUT1.png"},"08_HRSG/INLET_DUCT_OUTPUT1.png",{"n":"08_HRSG/STACK_INPUT1.png"},{"n":"08_HRSG/STACK_INPUT2.png"},"08_HRSG/STACK_OUPUT1.png","08_HRSG/STACK_OUTPUT2.png","08_HRSG/STACK_OUTPUT3.png"],"PIPING_ARRANGEMENT_EDIT__ACE_E3D":[{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/01_E3D Input File for Piping GA 1.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/02_E3D Auto Output file for Piping GA 1.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/03_E3D Input File for Piping GA 2.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/04_E3D Auto Output file for Piping GA 2.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/05_E3D Input File for Piping GA 3.png"},{"n":"09_PIPING_ARRANGEMENT_EDIT__ACE_E3D/06_E3D Auto Output file for Piping GA 3.png"}],"PIPING_ARRANGEMENT_EDIT__SP3D":[{"n":"10_PIPING_ARRANGEMENT_EDIT__SP3D/01_SP3D Input File for Piping GA.png"},{"n":"10_PIPING_ARRANGEMENT_EDIT__SP3D/02_SP3D Auto Output file for Piping GA.png"}],"ISO_AUTO_EDIT__ISO UPDATE NEW":[{"n":"12_ISO_AUTO_EDIT__ISO UPDATE NEW/01_ISO Input File 1.png"},{"n":"12_ISO_AUTO_EDIT__ISO UPDATE NEW/02_ISO Auto Output File 1.png"},{"n":"12_ISO_AUTO_EDIT__ISO UPDATE NEW/03_ISO Input File 2.png"},{"n":"12_ISO_AUTO_EDIT__ISO UPDATE NEW/04_ISO Auto Output File 2.png"},"12_ISO_AUTO_EDIT__ISO UPDATE NEW/05_ISO Auto Output File 2-1.png"],"ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA":[{"n":"13_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA/01_E3D-SA ISO Input File.png"},{"n":"13_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA/02_E3D-SA ISO Auto Output File.png"}],"ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_SP3D":[{"n":"14_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_SP3D/01_SP3D ISO Input File.png"},{"n":"14_ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_SP3D/02_SP3D ISO Auto Output File.png"}],"STEEL_STRUCTURE__2DTO3DFORE3D":[{"n":"16_STEEL_STRUCTURE__2DTO3DFORE3D/01_input1-1.png"},"16_STEEL_STRUCTURE__2DTO3DFORE3D/02_output1-1.png",{"n":"16_STEEL_STRUCTURE__2DTO3DFORE3D/03_input1-2.png"},"16_STEEL_STRUCTURE__2DTO3DFORE3D/04_output1-2.png",{"n":"16_STEEL_STRUCTURE__2DTO3DFORE3D/05_input1-3.png"},"16_STEEL_STRUCTURE__2DTO3DFORE3D/06_output1-3.png","16_STEEL_STRUCTURE__2DTO3DFORE3D/07_outputall.png"],"STEEL_STRUCTURE__TEKLATOE3D":["17_STEEL_STRUCTURE__TEKLATOE3D/output0.png","17_STEEL_STRUCTURE__TEKLATOE3D/output02.png","17_STEEL_STRUCTURE__TEKLATOE3D/output1.png","17_STEEL_STRUCTURE__TEKLATOE3D/output3.png","17_STEEL_STRUCTURE__TEKLATOE3D/output4.png","17_STEEL_STRUCTURE__TEKLATOE3D/output5.png"],"STEEL_STRUCTURE__E3DTOTEKLA":["18_STEEL_STRUCTURE__E3DTOTEKLA/01_E3D to Tekla - E3D Input.png","18_STEEL_STRUCTURE__E3DTOTEKLA/02_E3D to Tekla - Tekla Output 1.png","18_STEEL_STRUCTURE__E3DTOTEKLA/03_E3D to Tekla - Tekla Output 2.png"],"SUPPORT_DWG_EDIT__ACE_SUPP_E3D":[{"n":"18_SUPPORT_DWG_EDIT__ACE_SUPP_E3D/01_Support Plan Input 1.png"},{"n":"18_SUPPORT_DWG_EDIT__ACE_SUPP_E3D/02_Support Plan Auto Output 1.png"},{"n":"18_SUPPORT_DWG_EDIT__ACE_SUPP_E3D/03_Support Plan Input 2.png"},{"n":"18_SUPPORT_DWG_EDIT__ACE_SUPP_E3D/04_Support Plan Auto Output 2.png"},{"n":"18_SUPPORT_DWG_EDIT__ACE_SUPP_E3D/05_Support Plan Input 3.png"},{"n":"18_SUPPORT_DWG_EDIT__ACE_SUPP_E3D/06_Support Plan Auto Output 3.png"}]};
 /* OUTPUTS_END */
+/* GUIDES_START */
+const GUIDES = {"ACEUTIL":"GUIDES/pdf/ACEUTIL.pdf","CAESARII":"GUIDES/pdf/CAESARII.pdf","CAESARII__caesariitoe3dmac":"GUIDES/pdf/CAESARII__caesariitoe3dmac.pdf","CAESARII__E3D_MacroToPCF":"GUIDES/pdf/CAESARII__E3D_MacroToPCF.pdf","CDQDWG":"GUIDES/pdf/CDQDWG.pdf","DATA_SHEET__LINE_LIST":"GUIDES/pdf/DATA_SHEET__LINE_LIST.pdf","DATA_SHEET__PMC":"GUIDES/pdf/DATA_SHEET__PMC.pdf","DATA_SHEET__SAFETY_VALV_SIZING":"GUIDES/pdf/DATA_SHEET__SAFETY_VALV_SIZING.pdf","E3D_SPEC_GEN":"GUIDES/pdf/E3D_SPEC_GEN.pdf","E3D_STP_CONV":"GUIDES/pdf/E3D_STP_CONV.pdf","HRSG":"GUIDES/pdf/HRSG.pdf","ISO_AUTO_EDIT__ISO UPDATE NEW":"GUIDES/pdf/ISO_AUTO_EDIT__ISO UPDATE NEW.pdf","ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA":"GUIDES/pdf/ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_E3DSA.pdf","ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_PDS":"GUIDES/pdf/ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_PDS.pdf","ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_SP3D":"GUIDES/pdf/ISO_AUTO_EDIT__ISO_AUTO_EDIT_FOR_SP3D.pdf","MTO":"GUIDES/pdf/MTO.pdf","OTHERS":"GUIDES/pdf/OTHERS.pdf","PDF_EDIT":"GUIDES/pdf/PDF_EDIT.pdf","PIPING_ARRANGEMENT_EDIT__ACE_E3D":"GUIDES/pdf/PIPING_ARRANGEMENT_EDIT__ACE_E3D.pdf","PIPING_ARRANGEMENT_EDIT__E3D":"GUIDES/pdf/PIPING_ARRANGEMENT_EDIT__E3D.pdf","PIPING_ARRANGEMENT_EDIT__SP3D":"GUIDES/pdf/PIPING_ARRANGEMENT_EDIT__SP3D.pdf","SP3D_SPEC_GEN":"GUIDES/pdf/SP3D_SPEC_GEN.pdf","STEEL_STRUCTURE__2DTO3DFORE3D":"GUIDES/pdf/STEEL_STRUCTURE__2DTO3DFORE3D.pdf","STEEL_STRUCTURE__E3DTOTEKLA":"GUIDES/pdf/STEEL_STRUCTURE__E3DTOTEKLA.pdf","STEEL_STRUCTURE__TEKLATOE3D":"GUIDES/pdf/STEEL_STRUCTURE__TEKLATOE3D.pdf","SUPPORT_DWG_EDIT__ACE_SUPP_E3D":"GUIDES/pdf/SUPPORT_DWG_EDIT__ACE_SUPP_E3D.pdf","SUPPORT_DWG_EDIT__SUPPORT DATA AUTO INPUT":"GUIDES/pdf/SUPPORT_DWG_EDIT__SUPPORT DATA AUTO INPUT.pdf","SUPPORT_DWG_EDIT__SUPPORT":"GUIDES/pdf/SUPPORT_DWG_EDIT__SUPPORT.pdf","SUPPORT_DWG_EDIT__SUPPORT_BOM":"GUIDES/pdf/SUPPORT_DWG_EDIT__SUPPORT_BOM.pdf","WeekWorkPDF":"GUIDES/pdf/WeekWorkPDF.pdf"};
+/* GUIDES_END */
 const keyOf = p => p.path.replace(/[\/\\]/g,"__");
-const outFiles = p => OUTPUTS[keyOf(p)] || [];
+const guidePdf = p => GUIDES[keyOf(p)] || null;
 
-// 카드 푸터 좌측: 출력물이 있으면 '출력물 보기' 버튼, 없으면 스크립트 계수.
+// 카드 푸터 좌측: 가이드 PDF 가 있으면 'GUIDE' 버튼(클릭 시 PDF 뷰어), 없으면 스크립트 계수.
 function cardFoot(p){
-  // 모든 카드에 출력물 버튼 표시(이미지 없으면 클릭 시 안내). 이미지 있으면 개수 함께.
-  const n = outFiles(p).length;
-  return `<button class="outbtn" type="button" data-out="${keyOf(p)}">📂 ${T('outBtn')}${n?(' '+n):''}</button>`;
+  const g = guidePdf(p);
+  if(!g) return `<span class="foot-n">${p.count?(p.count+' '+T('scripts')):''}</span>`;
+  return `<button class="outbtn" type="button" data-guide="${keyOf(p)}">📖 ${T('outBtn')}</button>`;
 }
 
 function cardHTML(p){
@@ -740,9 +750,9 @@ function renderContent(){
   $("#content").querySelectorAll(".card").forEach(card=>{
     card.onclick = ()=>openModal(card.dataset.id);
   });
-  // 출력물 보기 버튼 — 카드 클릭(모달)으로 전파 방지
+  // GUIDE 버튼 — 카드 클릭(모달)으로 전파 방지, PDF 뷰어 열기
   $("#content").querySelectorAll(".outbtn").forEach(b=>{
-    b.onclick = (e)=>{ e.stopPropagation(); openOutputs(b.dataset.out); };
+    b.onclick = (e)=>{ e.stopPropagation(); openGuide(b.dataset.guide); };
   });
 }
 
@@ -900,44 +910,29 @@ function closeModal(){ $("#ov").classList.remove("show"); }
 $("#ov").onclick = e=>{ if(e.target.id==="ov") closeModal(); };
 document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeModal(); closeOutputs(); } });
 
-/* ============== OUTPUT SAMPLES (라이트박스) ============== */
-// 카드별 산출물 이미지 갤러리. 다크 테마에서 스크린샷과 동일하게 반전(.lb-img).
-function openOutputs(key){
+/* ============== GUIDE (PDF 뷰어) ============== */
+// 카드별 프로그램 가이드(PDF)를 모달 안 iframe 으로 표시. 새 탭 열기 링크 제공.
+function openGuide(key){
   const p = PROJECTS.find(x=>keyOf(x)===key);
-  const files = OUTPUTS[key] || [];
+  const pdf = GUIDES[key];
   const title = p ? pTitle(p) : key;
-  const enc = r => "outputs/" + r.split("/").map(encodeURIComponent).join("/");
-  const isDark = () => !document.body.classList.contains("light");
-  const body = files.length
-    ? files.map(item=>{
-        // item: 문자열="NN/file"(밝은 문서, CSS 반전) | {n}=네이티브 단일(반전X)
-        //       | {l,d}=테마쌍(다크=d, 라이트=l, 반전X)
-        const obj = (typeof item === "object");
-        const lref = obj ? (item.n || item.l) : item;
-        const cap = lref.split("/").pop().replace(/^\d+_/, "").replace(/\.[^.]+$/, "");
-        if(obj && item.n){               // 네이티브 단일(다크 CAD 등) — 양테마 동일
-          return `<div class="lb-cap">${cap}</div>
-            <img class="lb-img native" src="${enc(item.n)}" alt="${cap}" loading="lazy"
-              onclick="window.open(this.src,'_blank')">`;
-        }
-        if(obj){                         // 테마쌍
-          const ls = enc(item.l), ds = enc(item.d);
-          return `<div class="lb-cap">${cap}</div>
-            <img class="lb-img native" src="${isDark()?ds:ls}" data-l="${ls}" data-d="${ds}" alt="${cap}" loading="lazy"
-              onclick="window.open(this.src,'_blank')">`;
-        }
-        return `<div class="lb-cap">${cap}</div>
-          <img class="lb-img" src="${enc(item)}" alt="${cap}" loading="lazy"
-            onclick="window.open(this.src,'_blank')">`;
-      }).join("")
-    : `<div class="lb-empty">${T('outEmpty')}</div>`;
-  $("#outModal").innerHTML = `
-    <div class="m-h">
-      <div class="cico">${p?p.ic:"📂"}</div>
-      <div style="min-width:0"><h3>${T('outTitle')}</h3><div class="sub">${title}</div></div>
-      <button class="m-x" id="ox">✕</button>
-    </div>
-    <div class="lb-b">${body}</div>`;
+  if(!pdf){
+    $("#outModal").innerHTML = `
+      <div class="m-h"><div class="cico">${p?p.ic:"📖"}</div>
+        <div style="min-width:0"><h3>${T('outTitle')}</h3><div class="sub">${title}</div></div>
+        <button class="m-x" id="ox">✕</button></div>
+      <div class="lb-b"><div class="lb-empty">${T('outEmpty')}</div></div>`;
+  } else {
+    const url = pdf.split("/").map(encodeURIComponent).join("/");
+    $("#outModal").innerHTML = `
+      <div class="m-h">
+        <div class="cico">${p?p.ic:"📖"}</div>
+        <div style="min-width:0"><h3>${T('outTitle')}</h3><div class="sub">${title}</div></div>
+        <a class="m-open" href="${url}" target="_blank" rel="noopener" title="새 탭에서 열기 / 다운로드">↗</a>
+        <button class="m-x" id="ox">✕</button>
+      </div>
+      <div class="lb-b"><iframe class="lb-pdf" src="${url}#toolbar=1&view=FitH" title="${title}"></iframe></div>`;
+  }
   $("#ovOut").classList.add("show");
   $("#ox").onclick = closeOutputs;
 }
