@@ -379,7 +379,6 @@ const CATS = [
   {id:"iso",     name:"아이소 도면 자동편집", ic:"📐"},
   {id:"steel",   name:"철골 구조 변환",        ic:"🏗️"},
   {id:"support", name:"파이프 서포트",         ic:"🔧"},
-  {id:"util",    name:"계산·유틸리티",         ic:"🧰"},
 ];
 
 const PROJECTS = [
@@ -513,30 +512,6 @@ const PROJECTS = [
    status:"dev", count:3,
    desc:"서포트 총중량(TOTALWT) 계산 및 DWG→DXF 변환 보조 도구.",
    tags:["Support","Weight","DWG"]},
-
-  // ---- UTIL ----
-  {cat:"util", ic:"🧮", title:"배관 계산기 (ACEUTIL)", path:"ACEUTIL",
-   status:"run", count:6,
-   desc:"피팅 중량·압력강하(증기/물/일반)·배관 두께·단열 밀도 등 현장용 소형 계산 도구 모음.",
-   tags:["계산","압력강하","단열","Tkinter"]},
-  {cat:"util", ic:"🔎", title:"PDF 편집·검색·모델체크", path:"PDF_EDIT",
-   status:"run", count:21,
-   desc:"PDF OCR·텍스트 검색(미리보기 뷰어 포함)·P&ID 모델 체크·라인/밸브 리스트 자동 생성 유틸리티.",
-   tags:["PDF","OCR","검색","ModelCheck"]},
-  {cat:"util", ic:"🗂️", title:"공용 유틸리티 (OTHERS)", path:"OTHERS",
-   status:"dev", count:5,
-   desc:"폴더 파일명 추출·파이썬 업/다운로드·단열 밀도 등 잡다한 보조 스크립트.",
-   tags:["utility","파일","backup"]},
-  {cat:"util", ic:"📐", title:"CDQ 도면 ISO 블록 변환", path:"CDQDWG",
-   entry:["CDQISOBLCHANGE.PY"],
-   status:"dev", count:2,
-   desc:"CDQ 도면의 아이소 블록을 일괄 변경/정리하는 DWG 편집 스크립트.",
-   tags:["DWG","ISO","CDQ"]},
-  {cat:"util", ic:"📅", title:"주간 업무 PDF 생성", path:"WeekWorkPDF",
-   entry:["week.py"],
-   status:"dev", count:1,
-   desc:"주간 업무 보고를 PDF로 자동 생성하는 도구.",
-   tags:["PDF","주간보고","report"]},
 ];
 
 const STATUS = {
