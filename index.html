@@ -387,8 +387,8 @@ const PROJECTS = [
   {cat:"dchk", ic:"✅", title:"DESIGN CHECK — 설계 산출물 자동 점검", path:"DESIGN_CHECK",
    entry:["src/gui.py"],
    status:"dev", count:16,
-   desc:"사내 체크리스트(Piping Documents / Piping Drawing) 기준으로 라인리스트·밸브리스트·아이소 DXF·CAESAR II(.CII) 산출물을 자동 점검 — 위반 항목을 체크리스트 ID에 연결해 엑셀 리포트로 출력.",
-   tags:["체크리스트","LINE LIST","VALVE LIST","DXF","CAESAR II","Excel"]},
+   desc:"LINE LIST·VALVE LIST·P&ID·아이소 DXF·CAESAR II(.CII) 산출물을 계약·PMC·ANSI 기준 및 사내 체크리스트에 대조해 자동 점검 — 위반 항목을 체크리스트 ID에 연결해 엑셀 리포트로 출력.",
+   tags:["체크리스트","LINE LIST","VALVE LIST","P&ID","DXF","CAESAR II","Excel"]},
 
   // ---- ISO ----
   {cat:"iso", ic:"🧪", title:"E3D ISO Drawing Updater", path:"ISO_AUTO_EDIT/ISO UPDATE NEW",
@@ -532,6 +532,7 @@ const STATUS = {
 let LANG = "en";                       // 디폴트 영문
 const STATUS_EN = { run:"Operational", dev:"In Dev", lab:"Experimental" };
 const CAT_EN = {
+  dchk:"DESIGN CHECK — Deliverable Review",
   iso:"Isometric Drawing Auto-Edit", arr:"Piping Arrangement Edit",
   steel:"Steel Structure Conversion", conv:"3D Model · Spec Conversion",
   support:"Pipe Support", data:"Datasheet / List", util:"Calculation · Utility",
@@ -539,6 +540,7 @@ const CAT_EN = {
 };
 // 영문 오버레이 (path → 영문 제목/설명). 없으면 한글 원본 사용.
 const TR = {
+  "DESIGN_CHECK":{title:"DESIGN CHECK — Design Deliverable Auto-Review",desc:"Auto-reviews Line List · Valve List · P&ID · isometric DXF · CAESAR II (.CII) deliverables against contract / PMC / ANSI criteria and the in-house check lists, linking each finding to its check-list ID and exporting an Excel report."},
   "ISO_AUTO_EDIT/ISO_AUTO_EDIT_FOR_SP3D":{title:"SP3D Isometric Auto-Edit",desc:"Batch-corrects SmartPlant 3D isometric drawings: insulation / dimension / weld-no / elbow / elevation text, item-no rotation and support symbols."},
   "ISO_AUTO_EDIT/ISO_AUTO_EDIT_FOR_E3DSA":{title:"E3D-SA Isometric Edit",desc:"Cleanup for E3D Stress (SA) isometrics — 11 steps following SA output rules (delete tee text / spec-no / flange info, etc.)."},
   "ISO_AUTO_EDIT/ISO_AUTO_EDIT_FOR_PDS":{title:"PDS Isometric Auto-Edit",desc:"Dimension / item-no / weld-no / elbow editing of Intergraph PDS isometric DXF, plus ISO BOM Excel export."},
@@ -894,6 +896,23 @@ $("#ov").onclick = e=>{ if(e.target.id==="ov") closeModal(); };
 document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeModal(); closeOutputs(); } });
 
 /* ============== GUIDE (PDF 뷰어) ============== */
+// 카톡·인스타 등 인앱 브라우저(WebView)와 안드로이드는 PDF 뷰어가 없어
+// <iframe src="*.pdf"> 를 렌더하지 못하고 '다운로드'로 처리한다.
+// 이런 환경에선 공개 URL 을 Google Docs 뷰어로 감싸 HTML 로 렌더한다.
+function pdfViewerSrc(encRel){
+  const raw = encRel + "#toolbar=1&view=FitH";
+  let abs;
+  try { abs = new URL(encRel, location.href).href; } catch(e){ return raw; }
+  const ua = navigator.userAgent || "";
+  const inApp = /KAKAOTALK|FBAN|FBAV|Instagram|Line\/|NAVER|DaumApps|; wv\)/i.test(ua);
+  const android = /Android/i.test(ua);
+  const remote = /^https?:$/.test(location.protocol) &&
+                 !/^(localhost|127\.|0\.0\.0\.0)/.test(location.hostname);
+  if(remote && (inApp || android)){
+    return "https://docs.google.com/gview?embedded=true&url=" + encodeURIComponent(abs);
+  }
+  return raw;
+}
 // 카드별 프로그램 가이드(PDF)를 모달 안 iframe 으로 표시. 새 탭 열기 링크 제공.
 function openGuide(key){
   const p = PROJECTS.find(x=>keyOf(x)===key);
@@ -914,7 +933,7 @@ function openGuide(key){
         <a class="m-open" href="${url}" target="_blank" rel="noopener" title="새 탭에서 열기 / 다운로드">↗</a>
         <button class="m-x" id="ox">✕</button>
       </div>
-      <div class="lb-b"><iframe class="lb-pdf" src="${url}#toolbar=1&view=FitH" title="${title}"></iframe></div>`;
+      <div class="lb-b"><iframe class="lb-pdf" src="${pdfViewerSrc(url)}" title="${title}"></iframe></div>`;
   }
   $("#ovOut").classList.add("show");
   $("#ox").onclick = closeOutputs;
